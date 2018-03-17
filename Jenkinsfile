@@ -6,6 +6,7 @@ pipeline {
     stages {
         stage('Build Server') {
             steps {
+            		echo 'Hello Jenkins'
                 sh './gradlew clean build'
             }
         }
