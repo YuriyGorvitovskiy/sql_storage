@@ -10,4 +10,12 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            githubNotify status: "SUCCESS", credentialsId: "Jenkins_for_GitHub", account: "YuriyGorvitovskiy", repo: "sql_storage"
+        }
+        failure {
+            githubNotify status: "FAILURE", credentialsId: "Jenkins_for_GitHub", account: "YuriyGorvitovskiy", repo: "sql_storage"
+        }
+    }
 }
