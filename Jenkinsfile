@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Build Server') {
             steps {
-            		githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub"
+            		githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub", description: "Build is in progress...", account: "YuriyGorvitovskiy", repo: "sql_storage"
                 sh './gradlew clean build'
             }
         }
