@@ -4,9 +4,9 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages {
-    		stage('Prepare') {
-	    		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{\"state\": \"pending\",\"target_url\": \"${BUILD_URL}\",\"description\": \"The build has pending!\"}"
-    		}
+        stage('Prepare') {
+            githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub"
+        }
         stage('Build Server') {
             steps {
                 sh './gradlew clean build'
@@ -15,10 +15,10 @@ pipeline {
     }
     post {
         success {
-        		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{\"state\": \"success\",\"target_url\": \"${BUILD_URL}\",\"description\": \"The build has succeeded!\"}"
+            githubNotify status: "SUCCESS", credentialsId: "Jenkins_for_GitHub"
         }
         failure {
-        		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{\"state\": \"failure\",\"target_url\": \"${BUILD_URL}\",\"description\": \"The build has failed!\"}"
+            githubNotify status: "FAILURE", credentialsId: "Jenkins_for_GitHub"
         }
     }
 }
