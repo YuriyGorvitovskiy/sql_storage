@@ -16,17 +16,18 @@ pipeline {
     stages {
         stage('Build Server') {
             steps {
-            		setBuildStatus("Build in progress...", "PENDING")
+                setBuildStatus("Build in progress...", "PENDING")
+
                 sh './gradlew clean build'
             }
         }
     }
     post {
         success {
-        		setBuildStatus("Build succeeded!", "SUCCESS")
+            setBuildStatus("Build succeeded!", "SUCCESS")
         }
         failure {
-        		setBuildStatus("Build failed!", "FAILURE")
+            setBuildStatus("Build failed!", "FAILURE")
         }
     }
 }
