@@ -6,17 +6,17 @@ pipeline {
     stages {
         stage('Build Server') {
             steps {
-            		githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub", description: "Build is in progress...", account: "YuriyGorvitovskiy", repo: "sql_storage"
+            		githubNotify status: "PENDING", credentialsId: "YuriyGorvitovskiy_at_GitHub", description: "Build is in progress...", account: "YuriyGorvitovskiy", repo: "sql_storage"
                 sh './gradlew clean build'
             }
         }
     }
     post {
         success {
-            githubNotify status: "SUCCESS", credentialsId: "Jenkins_for_GitHub"
+        		githubNotify status: "SUCCESS", credentialsId: "YuriyGorvitovskiy_at_GitHub", description: "Build succeeded!", account: "YuriyGorvitovskiy", repo: "sql_storage"
         }
         failure {
-            githubNotify status: "FAILURE", credentialsId: "Jenkins_for_GitHub"
+        		githubNotify status: "FAILURE", credentialsId: "YuriyGorvitovskiy_at_GitHub", description: "Build failed!", account: "YuriyGorvitovskiy", repo: "sql_storage"
         }
     }
 }
