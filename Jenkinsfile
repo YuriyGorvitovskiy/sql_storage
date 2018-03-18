@@ -4,6 +4,13 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages {
+    		stage('Prepare') {
+	    		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{
+					\"state\": \"pending\",
+  					\"target_url\": \"${BUILD_URL}\",
+  					\"description\": \"The build has pending!\"
+			}"
+    		}
         stage('Build Server') {
             steps {
                 sh './gradlew clean build'
@@ -12,10 +19,18 @@ pipeline {
     }
     post {
         success {
-            githubNotify status: "SUCCESS", credentialsId: "Jenkins_for_GitHub", account: "YuriyGorvitovskiy", repo: "sql_storage"
+        		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{
+					\"state\": \"success\",
+  					\"target_url\": \"${BUILD_URL}\",
+  					\"description\": \"The build has succeeded!\"
+			}"
         }
         failure {
-            githubNotify status: "FAILURE", credentialsId: "Jenkins_for_GitHub", account: "YuriyGorvitovskiy", repo: "sql_storage"
+        		curl -XPOST -H "Authorization: token OAUTH TOKEN" https://api.github.com/repos/YuriyGorvitovskiy/sql_storage/statuses/$(git rev-parse HEAD) -d "{
+					\"state\": \"failure\",
+  					\"target_url\": \"${BUILD_URL}\",
+  					\"description\": \"The build has failed!\"
+			}"
         }
     }
 }
