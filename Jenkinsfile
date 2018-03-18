@@ -4,11 +4,9 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages {
-        stage('Prepare') {
-            githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub"
-        }
         stage('Build Server') {
             steps {
+            		githubNotify status: "PENDING", credentialsId: "Jenkins_for_GitHub"
                 sh './gradlew clean build'
             }
         }
