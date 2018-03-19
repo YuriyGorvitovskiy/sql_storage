@@ -47,6 +47,7 @@ public class Asserts {
 	for (Object a : equalsObjects) {
 	    for (Object b : equalsObjects) {
 		assertEquals(a, b);
+		assertEquals("HashCode should be the same for: " + a + " and " + b, a.hashCode(), b.hashCode());
 	    }
 	}
     }

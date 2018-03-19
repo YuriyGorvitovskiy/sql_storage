@@ -58,6 +58,6 @@ public class EntityModel {
 
     @Override
     public String toString() {
-	return "EntityModel [name=" + name + ", attributes=" + attributes + "]";
+	return "EntityModel [name=" + name + ", attributes=" + attributes.values() + "]";
     }
 }

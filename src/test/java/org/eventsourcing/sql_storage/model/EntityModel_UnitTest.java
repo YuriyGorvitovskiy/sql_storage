@@ -39,7 +39,7 @@ public class EntityModel_UnitTest {
     }
 
     @Test
-    public void constructor_failue_sharingAttribute() {
+    public void constructor_failure_sharingAttribute() {
 	// Setup
 	final String NAME = "MyEntity";
 	final String ATTR_NAME1 = "AttrFloating";
