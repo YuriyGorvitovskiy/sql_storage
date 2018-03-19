@@ -27,3 +27,9 @@ jacoco {
     toolVersion = "0.8.0"
 }
 
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}

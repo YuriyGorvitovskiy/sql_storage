@@ -2,8 +2,6 @@ package org.eventsourcing.sql_storage.model;
 
 import java.util.Objects;
 
-import org.eventsourcing.sql_storage.util.Utils;
-
 public class ValueType {
 
     final ContainerType containerType;
@@ -29,9 +27,11 @@ public class ValueType {
 
     @Override
     public boolean equals(Object obj) {
-	Boolean check = Utils.equalsCheck(this, obj);
-	if (null != check)
-	    return check;
+	if (this == obj)
+	    return true;
+
+	if (!(obj instanceof ValueType))
+	    return false;
 
 	ValueType other = (ValueType) obj;
 	return Objects.equals(this.containerType, other.containerType)

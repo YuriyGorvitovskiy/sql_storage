@@ -2,8 +2,6 @@ package org.eventsourcing.sql_storage.model;
 
 import java.util.Objects;
 
-import org.eventsourcing.sql_storage.util.Utils;
-
 public class AttributeModel {
 
     final String name;
@@ -29,9 +27,11 @@ public class AttributeModel {
 
     @Override
     public boolean equals(Object obj) {
-	Boolean check = Utils.equalsCheck(this, obj);
-	if (null != check)
-	    return check;
+	if (this == obj)
+	    return true;
+
+	if (!(obj instanceof AttributeModel))
+	    return false;
 
 	AttributeModel other = (AttributeModel) obj;
 	return Objects.equals(this.name, other.name) && Objects.equals(this.type, other.type);
