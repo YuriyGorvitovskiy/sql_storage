@@ -47,7 +47,6 @@ public class Asserts {
 	for (Object a : equalsObjects) {
 	    for (Object b : equalsObjects) {
 		assertEquals(a, b);
-		assertEquals("HashCode shoud be the same for: " + a + " and " + b, a.hashCode(), b.hashCode());
 	    }
 	}
     }
@@ -56,7 +55,7 @@ public class Asserts {
 	for (Object a : equalsObjects) {
 	    for (Object b : equalsObjects) {
 		if (a != b) {
-		    assertNotEquals("Value shoud be different for: " + a + " and " + b, a, b);
+		    assertNotEquals(a, b);
 		}
 	    }
 	}
