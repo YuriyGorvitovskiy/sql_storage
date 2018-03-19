@@ -6,28 +6,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class AttributeModel {
+public class Attribute {
 
     final String name;
     final ValueType type;
-    final Map<String, RelationTarget> targets;
+    final Map<String, Relation> targets;
 
     // Can be changed only by EntityModel Constructor
-    EntityModel owner;
+    EntityType owner;
 
-    public AttributeModel(String name, ValueType type) {
+    public Attribute(String name, ValueType type) {
 	this.name = name;
 	this.type = type;
 	this.targets = null;
     }
 
-    public AttributeModel(String name, ContainerType type, Collection<RelationTarget> targets) {
+    public Attribute(String name, Container type, Collection<Relation> targets) {
 	this.name = name;
-	this.type = new ValueType(type, PrimitiveType.REFERENCE);
+	this.type = new ValueType(type, Primitive.REFERENCE);
 
-	Map<String, RelationTarget> map = new HashMap<>();
-	for (RelationTarget target : targets) {
-	    RelationTarget duplicate = map.put(target.getEntityName(), target);
+	Map<String, Relation> map = new HashMap<>();
+	for (Relation target : targets) {
+	    Relation duplicate = map.put(target.getTargetEntityName(), target);
 	    if (null != duplicate)
 		throw new RuntimeException(
 			"Attribute " + name + " has duplicate target entities: " + duplicate + " & " + target);
@@ -47,11 +47,11 @@ public class AttributeModel {
 	return owner;
     }
 
-    public Map<String, RelationTarget> getTargets() {
+    public Map<String, Relation> getTargets() {
 	return targets;
     }
 
-    public RelationTarget getTarget(String entityName) {
+    public Relation getTarget(String entityName) {
 	return null != targets ? targets.get(entityName) : null;
     }
 
@@ -65,10 +65,10 @@ public class AttributeModel {
 	if (this == obj)
 	    return true;
 
-	if (!(obj instanceof AttributeModel))
+	if (!(obj instanceof Attribute))
 	    return false;
 
-	AttributeModel other = (AttributeModel) obj;
+	Attribute other = (Attribute) obj;
 	return Objects.equals(this.name, other.name) && Objects.equals(this.type, other.type);
     }
 

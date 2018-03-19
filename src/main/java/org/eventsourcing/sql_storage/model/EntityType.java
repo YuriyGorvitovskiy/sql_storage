@@ -6,17 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class EntityModel {
+public class EntityType {
 
     final String name;
 
-    final Map<String, AttributeModel> attributes;
+    final Map<String, Attribute> attributes;
 
-    public EntityModel(String name, Collection<AttributeModel> attributes) {
+    public EntityType(String name, Collection<Attribute> attributes) {
 	this.name = name;
 
-	Map<String, AttributeModel> map = new HashMap<>();
-	for (AttributeModel attribute : attributes) {
+	Map<String, Attribute> map = new HashMap<>();
+	for (Attribute attribute : attributes) {
 	    if (null != attribute.owner)
 		throw new RuntimeException(
 			"Attribute " + attribute + " already attached to the Entity " + attribute.owner);
@@ -31,11 +31,11 @@ public class EntityModel {
 	return name;
     }
 
-    public Map<String, AttributeModel> getAttributes() {
+    public Map<String, Attribute> getAttributes() {
 	return attributes;
     }
 
-    public AttributeModel getAttribute(String name) {
+    public Attribute getAttribute(String name) {
 	return attributes.get(name);
     }
 
@@ -49,15 +49,15 @@ public class EntityModel {
 	if (this == obj)
 	    return true;
 
-	if (!(obj instanceof EntityModel))
+	if (!(obj instanceof EntityType))
 	    return false;
 
-	EntityModel other = (EntityModel) obj;
+	EntityType other = (EntityType) obj;
 	return Objects.equals(this.name, other.name) && Objects.equals(this.attributes, other.attributes);
     }
 
     @Override
     public String toString() {
-	return "EntityModel [name=" + name + ", attributes=" + attributes.values() + "]";
+	return "EntityType [name=" + name + ", attributes=" + attributes.values() + "]";
     }
 }

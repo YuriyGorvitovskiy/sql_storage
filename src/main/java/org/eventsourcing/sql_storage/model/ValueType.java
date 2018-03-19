@@ -4,19 +4,19 @@ import java.util.Objects;
 
 public class ValueType {
 
-    final ContainerType containerType;
-    final PrimitiveType primitiveType;
+    final Container containerType;
+    final Primitive primitiveType;
 
-    public ValueType(ContainerType containerType, PrimitiveType primitiveType) {
+    public ValueType(Container containerType, Primitive primitiveType) {
 	this.containerType = containerType;
 	this.primitiveType = primitiveType;
     }
 
-    public ContainerType getContainerType() {
+    public Container getContainerType() {
 	return containerType;
     }
 
-    public PrimitiveType getPrimitiveType() {
+    public Primitive getPrimitiveType() {
 	return primitiveType;
     }
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertSame;
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Test;
 
-public class RelationTarget_UnitTest {
+public class Relation_UnitTest {
 
     @Test
     public void constructor_and_getters() {
@@ -14,11 +14,11 @@ public class RelationTarget_UnitTest {
 	final String ATTR_NAME = "MyAttr";
 
 	// Execute
-	RelationTarget target = new RelationTarget(ENTITY_NAME, ATTR_NAME);
+	Relation target = new Relation(ENTITY_NAME, ATTR_NAME);
 
 	// Verify
-	assertSame(ENTITY_NAME, target.getEntityName());
-	assertSame(ATTR_NAME, target.getAttributeName());
+	assertSame(ENTITY_NAME, target.getTargetEntityName());
+	assertSame(ATTR_NAME, target.getReverseAttributeName());
     }
 
     @Test
@@ -30,11 +30,11 @@ public class RelationTarget_UnitTest {
 	final String ATTR_NAME1 = "first";
 	final String ATTR_NAME2 = "second";
 
-	final RelationTarget TARGET_E1_A1 = new RelationTarget(ENTITY_NAME1, ATTR_NAME1);
-	final RelationTarget TARGET_E1_A2 = new RelationTarget(ENTITY_NAME1, ATTR_NAME2);
-	final RelationTarget TARGET_E2_A1 = new RelationTarget(ENTITY_NAME2, ATTR_NAME1);
-	final RelationTarget TARGET_E2_A2 = new RelationTarget(ENTITY_NAME2, ATTR_NAME2);
-	final RelationTarget TARGET_E1_A1_COPY = new RelationTarget(ENTITY_NAME1, ATTR_NAME1);
+	final Relation TARGET_E1_A1 = new Relation(ENTITY_NAME1, ATTR_NAME1);
+	final Relation TARGET_E1_A2 = new Relation(ENTITY_NAME1, ATTR_NAME2);
+	final Relation TARGET_E2_A1 = new Relation(ENTITY_NAME2, ATTR_NAME1);
+	final Relation TARGET_E2_A2 = new Relation(ENTITY_NAME2, ATTR_NAME2);
+	final Relation TARGET_E1_A1_COPY = new Relation(ENTITY_NAME1, ATTR_NAME1);
 
 	// Execute & Verify
 	Asserts.assertEquality(TARGET_E1_A1, TARGET_E1_A1_COPY);

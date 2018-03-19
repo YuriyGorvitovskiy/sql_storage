@@ -10,8 +10,8 @@ public class ValueType_UnitTest {
     @Test
     public void constructor_and_getters() {
 	// Setup
-	final ContainerType CONTAINER = ContainerType.MAP;
-	final PrimitiveType PRIMITIVE = PrimitiveType.FLOATING;
+	final Container CONTAINER = Container.MAP;
+	final Primitive PRIMITIVE = Primitive.FLOATING;
 
 	// Execute
 	ValueType type = new ValueType(CONTAINER, PRIMITIVE);
@@ -24,11 +24,11 @@ public class ValueType_UnitTest {
     @Test
     public void equals_and_hash() {
 	// Setup
-	final ContainerType CONTAINER1 = ContainerType.MAP;
-	final ContainerType CONTAINER2 = ContainerType.SINGLE;
+	final Container CONTAINER1 = Container.MAP;
+	final Container CONTAINER2 = Container.SINGLE;
 
-	final PrimitiveType PRIMITIVE1 = PrimitiveType.INTEGER;
-	final PrimitiveType PRIMITIVE2 = PrimitiveType.REFERENCE;
+	final Primitive PRIMITIVE1 = Primitive.INTEGER;
+	final Primitive PRIMITIVE2 = Primitive.REFERENCE;
 
 	final ValueType TYPE_C1_P1 = new ValueType(CONTAINER1, PRIMITIVE1);
 	final ValueType TYPE_C1_P2 = new ValueType(CONTAINER1, PRIMITIVE2);
