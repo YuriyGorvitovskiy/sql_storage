@@ -7,6 +7,9 @@ public class AttributeModel {
     final String name;
     final ValueType type;
 
+    // Can be changed only by EntityModel Constructor
+    EntityModel owner;
+
     public AttributeModel(String name, ValueType type) {
 	this.name = name;
 	this.type = type;
@@ -18,6 +21,10 @@ public class AttributeModel {
 
     public ValueType getType() {
 	return type;
+    }
+
+    public Object getOwner() {
+	return owner;
     }
 
     @Override
@@ -41,4 +48,5 @@ public class AttributeModel {
     public String toString() {
 	return "AttributeModel [name=" + name + ", type=" + type + "]";
     }
+
 }
