@@ -12,6 +12,9 @@ public class EntityType {
 
     final Map<String, Attribute> attributes;
 
+    // Can be changed only by Model Constructor
+    Model owner;
+
     public EntityType(String name, Collection<Attribute> attributes) {
 	this.name = name;
 
@@ -21,7 +24,11 @@ public class EntityType {
 		throw new RuntimeException(
 			"Attribute " + attribute + " already attached to the Entity " + attribute.owner);
 
-	    map.put(attribute.getName(), attribute);
+	    Attribute duplicate = map.put(attribute.getName(), attribute);
+	    if (null != duplicate)
+		throw new RuntimeException(
+			"Entity Type has duplicate Attribute names: " + duplicate + " & " + attribute);
+
 	    attribute.owner = this;
 	}
 	this.attributes = Collections.unmodifiableMap(map);
@@ -37,6 +44,10 @@ public class EntityType {
 
     public Attribute getAttribute(String name) {
 	return attributes.get(name);
+    }
+
+    public Model getOwner() {
+	return owner;
     }
 
     @Override
@@ -60,4 +71,5 @@ public class EntityType {
     public String toString() {
 	return "EntityType [name=" + name + ", attributes=" + attributes.values() + "]";
     }
+
 }

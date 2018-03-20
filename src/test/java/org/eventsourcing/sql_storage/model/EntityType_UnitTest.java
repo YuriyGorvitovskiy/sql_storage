@@ -60,6 +60,24 @@ public class EntityType_UnitTest {
     }
 
     @Test
+    public void constructor_failure_duplicateAttributeName() {
+	// Setup
+	final String NAME = "MyEntity";
+	final String ATTR_NAME = "AttrFloating";
+	final ValueType TYPE1 = new ValueType(Container.SINGLE, Primitive.FLOATING);
+	final ValueType TYPE2 = new ValueType(Container.LIST, Primitive.STRING);
+	final Attribute ATTR1 = new Attribute(ATTR_NAME, TYPE1);
+	final Attribute ATTR2 = new Attribute(ATTR_NAME, TYPE2);
+
+	// Rule
+	exception.expect(RuntimeException.class);
+	exception.expectMessage("duplicate Attribute names");
+
+	// Execute
+	new EntityType(NAME, Arrays.asList(ATTR1, ATTR2));
+    }
+
+    @Test
     public void equals_and_hash() {
 	// Setup
 	final String NAME1 = "Hello";

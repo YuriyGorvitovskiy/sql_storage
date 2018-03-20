@@ -12,7 +12,7 @@ public class Attribute {
     final ValueType type;
     final Map<String, Relation> targets;
 
-    // Can be changed only by EntityModel Constructor
+    // Can be changed only by EntityType Constructor
     EntityType owner;
 
     public Attribute(String name, ValueType type) {
