@@ -12,12 +12,12 @@ import org.junit.rules.ExpectedException;
 
 public class Relation_UnitTest {
 
-    final String ENTITY_NAME  = "Entity";
-    final String ENTITY_NAME1 = "Hello";
-    final String ENTITY_NAME2 = "World";
+    static final String ENTITY_NAME  = "Entity";
+    static final String ENTITY_NAME1 = "Hello";
+    static final String ENTITY_NAME2 = "World";
 
-    final String ATTR_NAME1 = "first";
-    final String ATTR_NAME2 = "second";
+    static final String ATTR_NAME1 = "first";
+    static final String ATTR_NAME2 = "second";
 
     final Model MODEL = new Model.Builder()
         .type(ENTITY_NAME, (t) -> t
