@@ -1,75 +1,112 @@
 package org.eventsourcing.sql_storage.model;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.eventsourcing.sql_storage.util.Helper;
 
 public class EntityType {
 
-    final String name;
+    public static class Builder {
+        String                            name;
+        List<Consumer<Attribute.Builder>> attributeDefiners = new ArrayList<>();
 
-    final Map<String, Attribute> attributes;
+        Builder() {
+        }
 
-    // Can be changed only by Model Constructor
-    Model owner;
+        public Builder name(String name) {
+            this.name = name.trim();
+            return this;
+        }
 
-    public EntityType(String name, Collection<Attribute> attributes) {
-	this.name = name;
+        public Builder attribute(Consumer<Attribute.Builder> attributeDefiner) {
+            this.attributeDefiners.add(attributeDefiner);
+            return this;
+        }
 
-	Map<String, Attribute> map = new HashMap<>();
-	for (Attribute attribute : attributes) {
-	    if (null != attribute.owner)
-		throw new RuntimeException(
-			"Attribute " + attribute + " already attached to the Entity " + attribute.owner);
+        public Builder attribute(String name, Consumer<Attribute.Builder> attributeDefiner) {
+            return attribute((a) -> attributeDefiner.accept(a.name(name)));
+        }
 
-	    Attribute duplicate = map.put(attribute.getName(), attribute);
-	    if (null != duplicate)
-		throw new RuntimeException(
-			"Entity Type has duplicate Attribute names: " + duplicate + " & " + attribute);
+        public Builder attribute(String name, ValueType type, Consumer<Attribute.Builder> attributeDefiner) {
+            return attribute((a) -> attributeDefiner.accept(a
+                .name(name)
+                .type(type)));
+        }
 
-	    attribute.owner = this;
-	}
-	this.attributes = Collections.unmodifiableMap(map);
+        public Builder attribute(String name, ValueType type) {
+            return attribute((a) -> a
+                .name(name)
+                .type(type));
+        }
+
+        public Builder attribute(String name, ValueType type, String target, String reverse) {
+            return attribute((a) -> a
+                .name(name)
+                .type(type)
+                .relation(target, reverse));
+        }
+
+        public EntityType build(Model model, List<Consumer<Model>> resolvers) {
+            if (Helper.isEmpty(name))
+                throw new RuntimeException("Entity Type has no name specified");
+
+            Map<String, Attribute> attributeMap = new HashMap<>();
+            EntityType type = new EntityType(model, name, attributeMap);
+
+            for (Consumer<Attribute.Builder> attributeDefiner : attributeDefiners) {
+                Attribute.Builder builder = new Attribute.Builder();
+                attributeDefiner.accept(builder);
+
+                Attribute attribute = builder.build(type, resolvers);
+                Attribute duplicate = attributeMap.put(attribute.name, attribute);
+                if (null != duplicate)
+                    throw new RuntimeException(
+                        "Model has duplicate Attribute names: " + duplicate + " & " + attribute);
+            }
+            return type;
+        }
     }
 
-    public String getName() {
-	return name;
-    }
+    public final Model                  owner;
+    public final String                 name;
+    public final Map<String, Attribute> attributes;
 
-    public Map<String, Attribute> getAttributes() {
-	return attributes;
+    EntityType(Model owner, String name, Map<String, Attribute> attributeMap) {
+        this.owner = owner;
+        this.name = name;
+        this.attributes = Collections.unmodifiableMap(attributeMap);
     }
 
     public Attribute getAttribute(String name) {
-	return attributes.get(name);
-    }
-
-    public Model getOwner() {
-	return owner;
+        return attributes.get(name);
     }
 
     @Override
     public int hashCode() {
-	return Objects.hash(name, attributes);
+        return Objects.hash(name, attributes);
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
+        if (this == obj)
+            return true;
 
-	if (!(obj instanceof EntityType))
-	    return false;
+        if (!(obj instanceof EntityType))
+            return false;
 
-	EntityType other = (EntityType) obj;
-	return Objects.equals(this.name, other.name) && Objects.equals(this.attributes, other.attributes);
+        EntityType other = (EntityType) obj;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.attributes, other.attributes);
     }
 
     @Override
     public String toString() {
-	return "EntityType [name=" + name + ", attributes=" + attributes.values() + "]";
+        return "EntityType [name=" + name + "]";
     }
 
 }

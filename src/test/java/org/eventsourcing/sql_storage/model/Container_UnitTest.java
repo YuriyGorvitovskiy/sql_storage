@@ -7,7 +7,7 @@ public class Container_UnitTest {
 
     @Test
     public void codeCoverage() {
-	// Execute
-	Asserts.assertEnum(Container.class);
+        // Execute
+        Asserts.assertEnum(Container.class);
     }
 }
