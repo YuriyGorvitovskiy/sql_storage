@@ -16,60 +16,60 @@ public class EntityType {
     Model owner;
 
     public EntityType(String name, Collection<Attribute> attributes) {
-	this.name = name;
+        this.name = name;
 
-	Map<String, Attribute> map = new HashMap<>();
-	for (Attribute attribute : attributes) {
-	    if (null != attribute.owner)
-		throw new RuntimeException(
-			"Attribute " + attribute + " already attached to the Entity " + attribute.owner);
+        Map<String, Attribute> map = new HashMap<>();
+        for (Attribute attribute : attributes) {
+            if (null != attribute.owner)
+                throw new RuntimeException(
+                    "Attribute " + attribute + " already attached to the Entity " + attribute.owner);
 
-	    Attribute duplicate = map.put(attribute.getName(), attribute);
-	    if (null != duplicate)
-		throw new RuntimeException(
-			"Entity Type has duplicate Attribute names: " + duplicate + " & " + attribute);
+            Attribute duplicate = map.put(attribute.getName(), attribute);
+            if (null != duplicate)
+                throw new RuntimeException(
+                    "Entity Type has duplicate Attribute names: " + duplicate + " & " + attribute);
 
-	    attribute.owner = this;
-	}
-	this.attributes = Collections.unmodifiableMap(map);
+            attribute.owner = this;
+        }
+        this.attributes = Collections.unmodifiableMap(map);
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public Map<String, Attribute> getAttributes() {
-	return attributes;
+        return attributes;
     }
 
     public Attribute getAttribute(String name) {
-	return attributes.get(name);
+        return attributes.get(name);
     }
 
     public Model getOwner() {
-	return owner;
+        return owner;
     }
 
     @Override
     public int hashCode() {
-	return Objects.hash(name, attributes);
+        return Objects.hash(name, attributes);
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
+        if (this == obj)
+            return true;
 
-	if (!(obj instanceof EntityType))
-	    return false;
+        if (!(obj instanceof EntityType))
+            return false;
 
-	EntityType other = (EntityType) obj;
-	return Objects.equals(this.name, other.name) && Objects.equals(this.attributes, other.attributes);
+        EntityType other = (EntityType) obj;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.attributes, other.attributes);
     }
 
     @Override
     public String toString() {
-	return "EntityType [name=" + name + ", attributes=" + attributes.values() + "]";
+        return "EntityType [name=" + name + ", attributes=" + attributes.values() + "]";
     }
 
 }

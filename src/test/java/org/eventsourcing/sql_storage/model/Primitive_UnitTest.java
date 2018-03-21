@@ -7,7 +7,7 @@ public class Primitive_UnitTest {
 
     @Test
     public void codeCoverage() {
-	// Execute
-	Asserts.assertEnum(Primitive.class);
+        // Execute
+        Asserts.assertEnum(Primitive.class);
     }
 }
