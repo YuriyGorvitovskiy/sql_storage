@@ -1,6 +1,7 @@
 package org.eventsourcing.sql_storage.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -46,7 +47,7 @@ public class Helper_UnitTest {
         // Setup
         Class<?> CLASS = Helper_UnitTest.class;
 
-        // Executre & Verify
+        // Execute & Verify
         assertEquals(ONE, Helper.getStaticField(String.class, CLASS.getDeclaredField("ONE")));
         assertEquals(PROTECTED, Helper.getStaticField(String.class, CLASS.getDeclaredField("PROTECTED")));
         assertEquals(PACKAGE, Helper.getStaticField(String.class, CLASS.getDeclaredField("PACKAGE")));
@@ -55,5 +56,15 @@ public class Helper_UnitTest {
         assertNull(Helper.getStaticField(String.class, CLASS.getDeclaredField("WRONG_TYPE")));
         assertNull(Helper.getStaticField(String.class, CLASS.getDeclaredField("NULL")));
         assertNull(Helper.getStaticField(String.class, CLASS.getDeclaredField("DYNAMIC")));
+    }
+
+    @Test
+    public void a() {
+        // Execute & Verify
+        assertTrue(Helper.isEmpty(null));
+        assertTrue(Helper.isEmpty(""));
+
+        assertFalse(Helper.isEmpty("abc"));
+        assertFalse(Helper.isEmpty(" "));
     }
 }

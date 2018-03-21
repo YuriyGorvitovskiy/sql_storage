@@ -1,10 +1,17 @@
 package org.eventsourcing.sql_storage.model;
 
+import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
+import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE;
+import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE_LIST;
+import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE_MAP;
+import static org.eventsourcing.sql_storage.model.ValueType.STRING;
+import static org.eventsourcing.sql_storage.model.ValueType.STRING_LIST;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Rule;
@@ -13,89 +20,175 @@ import org.junit.rules.ExpectedException;
 
 public class Attrtibute_UnitTest {
 
+    final String ENTITY_NAME1 = "Hello";
+    final String ENTITY_NAME2 = "World";
+    final String ENTITY_NAME3 = "Entity";
+
+    final String ATTR_NAME  = "attr";
+    final String ATTR_NAME1 = "first";
+    final String ATTR_NAME2 = "second";
+    final String ATTR_NAME3 = "third";
+
+    final Model MODEL = new Model.Builder()
+        .type(ENTITY_NAME1, (t) -> t
+            .attribute(ATTR_NAME1, REFERENCE, (a) -> a
+                .relation(ENTITY_NAME2, ATTR_NAME1)
+                .relation(ENTITY_NAME3, ATTR_NAME1))
+            .attribute(ATTR_NAME2, INTEGER)
+            .attribute(ATTR_NAME3, STRING))
+        .type(ENTITY_NAME2, (t) -> t
+            .attribute(ATTR_NAME1, REFERENCE, (a) -> a
+                .relation(ENTITY_NAME2, ATTR_NAME1)
+                .relation(ENTITY_NAME3, ATTR_NAME1))
+            .attribute(ATTR_NAME2, INTEGER)
+            .attribute(ATTR_NAME3, STRING))
+        .type(ENTITY_NAME3, (t) -> t
+            .attribute(ATTR_NAME1, REFERENCE, (a) -> a
+                .relation(ENTITY_NAME1, ATTR_NAME1)
+                .relation(ENTITY_NAME2, ATTR_NAME1))
+            .attribute(ATTR_NAME2, STRING)
+            .attribute(ATTR_NAME3, INTEGER))
+        .build();
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void constructor_and_getters() {
+    public void builder_direct() {
         // Setup
-        final String ENTITY_NAME1 = "Hello";
-        final String ENTITY_NAME2 = "World";
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY3 = MODEL.getEntityType(ENTITY_NAME3);
 
-        final String ATTR_NAME1 = "first";
-        final String ATTR_NAME2 = "second";
+        final Attribute ATTR1 = ENTITY1.getAttribute(ATTR_NAME1);
+        final Attribute ATTR3 = ENTITY3.getAttribute(ATTR_NAME1);
 
-        final ValueType TYPE = ValueType.typeOf(Primitive.FLOATING, Container.MAP);
-
-        final Relation TARGET1 = new Relation(ENTITY_NAME1, ATTR_NAME1);
-        final Relation TARGET2 = new Relation(ENTITY_NAME2, ATTR_NAME2);
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
         // Execute
-        Attribute attrSimple = new Attribute(ATTR_NAME1, TYPE);
-        Attribute attrRelation = new Attribute(ATTR_NAME2, Container.LIST,
-            Arrays.asList(TARGET1, TARGET2));
+        Attribute attribute = new Attribute.Builder()
+            .name(ATTR_NAME)
+            .type(REFERENCE_MAP)
+            .relation(ENTITY_NAME1, ATTR_NAME1)
+            .relation(ENTITY_NAME3, ATTR_NAME1)
+            .build(ENTITY1, resolvers);
+
+        for (Consumer<Model> resolver : resolvers) {
+            resolver.accept(MODEL);
+        }
 
         // Verify
-        assertSame(ATTR_NAME1, attrSimple.getName());
-        assertSame(TYPE, attrSimple.getType());
-        assertNull(attrSimple.getTargets());
-        assertNull(attrSimple.getTarget(ENTITY_NAME1));
-
-        assertSame(ATTR_NAME2, attrRelation.getName());
-        assertEquals(ValueType.typeOf(Primitive.REFERENCE, Container.LIST), attrRelation.getType());
-        assertSame(TARGET1, attrRelation.getTarget(ENTITY_NAME1));
-        assertSame(TARGET2, attrRelation.getTarget(ENTITY_NAME2));
-        assertEquals(2, attrRelation.getTargets().size());
+        assertSame(ENTITY1, attribute.owner);
+        assertSame(ATTR_NAME, attribute.name);
+        assertSame(REFERENCE_MAP, attribute.type);
+        assertSame(ENTITY1, attribute.getRelation(ENTITY_NAME1).target);
+        assertSame(ATTR1, attribute.getRelation(ENTITY_NAME1).reverse);
+        assertSame(ENTITY3, attribute.getRelation(ENTITY_NAME3).target);
+        assertSame(ATTR3, attribute.getRelation(ENTITY_NAME3).reverse);
+        assertEquals(2, attribute.relations.size());
     }
 
     @Test
-    public void constructor_failure_sameTargetEntity() {
+    public void builder_no_name() {
         // Setup
-        final String ENTITY_NAME = "Hello";
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
 
-        final String ATTR_NAME1 = "first";
-        final String ATTR_NAME2 = "second";
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
-        final Relation TARGET1 = new Relation(ENTITY_NAME, ATTR_NAME1);
-        final Relation TARGET2 = new Relation(ENTITY_NAME, ATTR_NAME2);
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("no name specified");
+
+        // Execute
+        new Attribute.Builder()
+            .type(REFERENCE_MAP)
+            .build(ENTITY1, resolvers);
+    }
+
+    @Test
+    public void builder_reference_no_relation() {
+        // Setup
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
+
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
+
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("has no relation defined");
+
+        // Execute
+        new Attribute.Builder()
+            .name(ATTR_NAME)
+            .type(REFERENCE_MAP)
+            .build(ENTITY1, resolvers);
+    }
+
+    @Test
+    public void builder_non_reference_has_relations() {
+        // Setup
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
+
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
+
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("is not allowed to have relations");
+
+        // Execute
+        new Attribute.Builder()
+            .name(ATTR_NAME)
+            .type(STRING_LIST)
+            .relation(ENTITY_NAME1, ATTR_NAME1)
+            .build(ENTITY1, resolvers);
+    }
+
+    @Test
+    public void builder_duplicate_relation_target() {
+        // Setup
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
+
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
         // Rule
         exception.expect(RuntimeException.class);
         exception.expectMessage("has duplicate target entities");
 
         // Execute
-        new Attribute(ATTR_NAME2, Container.LIST, Arrays.asList(TARGET1, TARGET2));
+        new Attribute.Builder()
+            .name(ATTR_NAME)
+            .type(REFERENCE_LIST)
+            .relation(ENTITY_NAME1, ATTR_NAME1)
+            .relation(ENTITY_NAME1, ATTR_NAME1)
+            .build(ENTITY1, resolvers);
+
+        for (Consumer<Model> resolver : resolvers) {
+            resolver.accept(MODEL);
+        }
+
     }
 
     @Test
     public void equals_and_hash() {
         // Setup
-        final String ENTITY_NAME1 = "Hello";
-        final String ENTITY_NAME2 = "World";
+        final Attribute ATTR_N1_T1_R1 = MODEL.getEntityType(ENTITY_NAME1).getAttribute(ATTR_NAME1);
+        final Attribute ATTR_N2_T2_RN = MODEL.getEntityType(ENTITY_NAME1).getAttribute(ATTR_NAME2);
+        final Attribute ATTR_N3_T3_RN = MODEL.getEntityType(ENTITY_NAME1).getAttribute(ATTR_NAME3);
 
-        final String ATTR_NAME1 = "first";
-        final String ATTR_NAME2 = "second";
+        final Attribute ATTR_N1_T1_R1_COPY = MODEL.getEntityType(ENTITY_NAME2).getAttribute(ATTR_NAME1);
+        final Attribute ATTR_N2_T2_RN_COPY = MODEL.getEntityType(ENTITY_NAME2).getAttribute(ATTR_NAME2);
+        final Attribute ATTR_N3_T3_RN_COPY = MODEL.getEntityType(ENTITY_NAME2).getAttribute(ATTR_NAME3);
 
-        final ValueType TYPE1 = ValueType.typeOf(Primitive.BOOLEAN, Container.SINGLE);
-
-        final Relation TARGET1 = new Relation(ENTITY_NAME1, ATTR_NAME1);
-        final Relation TARGET2 = new Relation(ENTITY_NAME2, ATTR_NAME2);
-
-        final Attribute ATTR_N1_T1 = new Attribute(ATTR_NAME1, TYPE1);
-        final Attribute ATTR_N1_T2 = new Attribute(ATTR_NAME1, Container.MAP,
-            Arrays.asList(TARGET1, TARGET2));
-        final Attribute ATTR_N2_T1 = new Attribute(ATTR_NAME2, TYPE1);
-        final Attribute ATTR_N2_T2 = new Attribute(ATTR_NAME2, Container.MAP,
-            Arrays.asList(TARGET1, TARGET2));
-        final Attribute ATTR_N1_T1_COPY = new Attribute(ATTR_NAME1, TYPE1);
-        final Attribute ATTR_N2_T2_COPY = new Attribute(ATTR_NAME2, Container.MAP,
-            Arrays.asList(TARGET1, TARGET2));
+        final Attribute ATTR_N1_T1_R2 = MODEL.getEntityType(ENTITY_NAME3).getAttribute(ATTR_NAME1);
+        final Attribute ATTR_N2_T3_RN = MODEL.getEntityType(ENTITY_NAME3).getAttribute(ATTR_NAME2);
+        final Attribute ATTR_N3_T2_RN = MODEL.getEntityType(ENTITY_NAME3).getAttribute(ATTR_NAME3);
 
         // Execute & Verify
-        Asserts.assertEquality(ATTR_N1_T1, ATTR_N1_T1_COPY);
-        Asserts.assertEquality(ATTR_N2_T2, ATTR_N2_T2_COPY);
+        Asserts.assertEquality(ATTR_N1_T1_R1, ATTR_N1_T1_R1_COPY);
+        Asserts.assertEquality(ATTR_N2_T2_RN, ATTR_N2_T2_RN_COPY);
+        Asserts.assertEquality(ATTR_N3_T3_RN, ATTR_N3_T3_RN_COPY);
 
-        Asserts.assertInequality(null, ATTR_N1_T1, ATTR_N1_T2, ATTR_N2_T1, ATTR_N2_T2);
+        Asserts.assertInequality(null,
+            ATTR_N1_T1_R1, ATTR_N2_T2_RN, ATTR_N3_T3_RN,
+            ATTR_N1_T1_R2, ATTR_N2_T3_RN, ATTR_N3_T2_RN);
     }
 
 }

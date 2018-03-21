@@ -44,4 +44,9 @@ public class Helper {
         return null;
     }
 
+    public static boolean isEmpty(String name) {
+        // TODO Auto-generated method stub
+        return null == name || name.length() == 0;
+    }
+
 }

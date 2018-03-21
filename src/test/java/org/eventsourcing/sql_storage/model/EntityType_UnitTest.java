@@ -1,8 +1,13 @@
 package org.eventsourcing.sql_storage.model;
 
+import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
+import static org.eventsourcing.sql_storage.model.ValueType.STRING;
+import static org.eventsourcing.sql_storage.model.ValueType.STRING_LIST;
 import static org.junit.Assert.assertSame;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Rule;
@@ -11,104 +16,100 @@ import org.junit.rules.ExpectedException;
 
 public class EntityType_UnitTest {
 
+    final String ENTITY_NAME  = "Entity";
+    final String ENTITY_NAME1 = "Hello";
+    final String ENTITY_NAME2 = "World";
+
+    final String ATTR_NAME1 = "first";
+    final String ATTR_NAME2 = "second";
+
+    final Model MODEL1 = new Model.Builder()
+        .type(ENTITY_NAME1, (t) -> t
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING))
+        .type(ENTITY_NAME2, (t) -> t
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING))
+        .build();
+
+    final Model MODEL2 = new Model.Builder()
+        .type(ENTITY_NAME1, (t) -> t
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING))
+        .type(ENTITY_NAME2, (t) -> t
+            .attribute(ATTR_NAME1, STRING)
+            .attribute(ATTR_NAME2, INTEGER))
+        .build();
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void constructor_and_getters() {
+    public void builder_direct() {
         // Setup
-        final String NAME = "MyEntity";
-        final String ATTR_NAME1 = "AttrFloating";
-        final String ATTR_NAME2 = "AttrStringList";
-        final ValueType TYPE1 = ValueType.typeOf(Primitive.FLOATING, Container.SINGLE);
-        final ValueType TYPE2 = ValueType.typeOf(Primitive.STRING, Container.LIST);
-        final Attribute ATTR1 = new Attribute(ATTR_NAME1, TYPE1);
-        final Attribute ATTR2 = new Attribute(ATTR_NAME2, TYPE2);
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
         // Execute
-        EntityType entity = new EntityType(NAME, Arrays.asList(ATTR1, ATTR2));
+        EntityType type = new EntityType.Builder()
+            .name(ENTITY_NAME)
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING_LIST)
+            .build(MODEL1, resolvers);
 
         // Verify
-        assertSame(NAME, entity.getName());
-        assertSame(ATTR1, entity.getAttribute(ATTR_NAME1));
-        assertSame(ATTR2, entity.getAttribute(ATTR_NAME2));
-        assertSame(2, entity.getAttributes().size());
-
-        assertSame(entity, ATTR1.getOwner());
-        assertSame(entity, ATTR2.getOwner());
+        assertSame(MODEL1, type.owner);
+        assertSame(ENTITY_NAME, type.name);
+        assertSame(ATTR_NAME1, type.getAttribute(ATTR_NAME1).name);
+        assertSame(INTEGER, type.getAttribute(ATTR_NAME1).type);
+        assertSame(ATTR_NAME2, type.getAttribute(ATTR_NAME2).name);
+        assertSame(STRING_LIST, type.getAttribute(ATTR_NAME2).type);
+        assertSame(2, type.attributes.size());
     }
 
     @Test
-    public void constructor_failure_sharingAttribute() {
+    public void builder_duplicate_attribute() {
         // Setup
-        final String NAME = "MyEntity";
-        final String ATTR_NAME1 = "AttrFloating";
-        final String ATTR_NAME2 = "AttrStringList";
-        final ValueType TYPE1 = ValueType.typeOf(Primitive.FLOATING, Container.SINGLE);
-        final ValueType TYPE2 = ValueType.typeOf(Primitive.STRING, Container.LIST);
-        final Attribute ATTR1 = new Attribute(ATTR_NAME1, TYPE1);
-        final Attribute ATTR2 = new Attribute(ATTR_NAME2, TYPE2);
-
-        new EntityType(NAME, Arrays.asList(ATTR2));
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
         // Rule
         exception.expect(RuntimeException.class);
-        exception.expectMessage("already attached to the Entity");
+        exception.expectMessage("has duplicate Attribute names");
 
         // Execute
-        new EntityType(NAME, Arrays.asList(ATTR1, ATTR2));
+        new EntityType.Builder()
+            .name(ENTITY_NAME)
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME1, STRING_LIST)
+            .build(MODEL1, resolvers);
     }
 
     @Test
-    public void constructor_failure_duplicateAttributeName() {
+    public void builder_no_name() {
         // Setup
-        final String NAME = "MyEntity";
-        final String ATTR_NAME = "AttrFloating";
-        final ValueType TYPE1 = ValueType.typeOf(Primitive.FLOATING, Container.SINGLE);
-        final ValueType TYPE2 = ValueType.typeOf(Primitive.STRING, Container.LIST);
-        final Attribute ATTR1 = new Attribute(ATTR_NAME, TYPE1);
-        final Attribute ATTR2 = new Attribute(ATTR_NAME, TYPE2);
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
 
         // Rule
         exception.expect(RuntimeException.class);
-        exception.expectMessage("duplicate Attribute names");
+        exception.expectMessage("no name specified");
 
         // Execute
-        new EntityType(NAME, Arrays.asList(ATTR1, ATTR2));
+        new EntityType.Builder()
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME1, STRING_LIST)
+            .build(MODEL1, resolvers);
     }
 
     @Test
     public void equals_and_hash() {
         // Setup
-        final String NAME1 = "Hello";
-        final String NAME2 = "World";
-
-        final String ATTR_NAME1 = "First";
-        final String ATTR_NAME2 = "Second";
-        final String ATTR_NAME3 = "Third";
-
-        final ValueType TYPE1 = ValueType.typeOf(Primitive.BOOLEAN, Container.SINGLE);
-        final ValueType TYPE2 = ValueType.typeOf(Primitive.REFERENCE, Container.LIST);
-        final ValueType TYPE3 = ValueType.typeOf(Primitive.TEXT, Container.MAP);
-
-        final EntityType ENTITY1 = new EntityType(NAME1,
-            Arrays.asList(new Attribute(ATTR_NAME1, TYPE1), new Attribute(ATTR_NAME2, TYPE2)));
-
-        final EntityType ENTITY2 = new EntityType(NAME1,
-            Arrays.asList(new Attribute(ATTR_NAME2, TYPE2), new Attribute(ATTR_NAME3, TYPE3)));
-
-        final EntityType ENTITY3 = new EntityType(NAME2,
-            Arrays.asList(new Attribute(ATTR_NAME1, TYPE1), new Attribute(ATTR_NAME2, TYPE2)));
-
-        final EntityType ENTITY4 = new EntityType(NAME2,
-            Arrays.asList(new Attribute(ATTR_NAME2, TYPE2), new Attribute(ATTR_NAME3, TYPE3)));
-
-        final EntityType ENTITY1_COPY = new EntityType(NAME1,
-            Arrays.asList(new Attribute(ATTR_NAME2, TYPE2), new Attribute(ATTR_NAME1, TYPE1)));
+        final EntityType ENTITY_N1_A1 = MODEL1.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_N2_A1 = MODEL1.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_N2_A2 = MODEL2.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_N1_A1_COPY = MODEL2.getEntityType(ENTITY_NAME1);
 
         // Execute & Verify
-        Asserts.assertEquality(ENTITY1, ENTITY1_COPY);
+        Asserts.assertEquality(ENTITY_N1_A1, ENTITY_N1_A1_COPY);
 
-        Asserts.assertInequality(null, ENTITY1, ENTITY2, ENTITY3, ENTITY4);
+        Asserts.assertInequality(null, ENTITY_N1_A1, ENTITY_N2_A1, ENTITY_N2_A2);
     }
 }

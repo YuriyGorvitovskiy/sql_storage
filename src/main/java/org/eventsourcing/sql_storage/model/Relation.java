@@ -4,25 +4,56 @@ import java.util.Objects;
 
 public class Relation {
 
-    final String targetEntityName;
-    final String reverseAttributeName;
+    public static class Builder {
+        String targetName;
+        String reverseName;
 
-    public Relation(String entityName, String attributeName) {
-        this.targetEntityName = entityName;
-        this.reverseAttributeName = attributeName;
+        Builder() {
+        }
+
+        public Builder target(String entityTypeName) {
+            this.targetName = entityTypeName.trim();
+            return this;
+        }
+
+        public Builder reverse(String attributeName) {
+            this.reverseName = attributeName.trim();
+            return this;
+        }
+
+        public Relation build(Model model) {
+            EntityType target = model.getEntityType(targetName);
+            if (null == target)
+                throw new RuntimeException(
+                    "Relation target entity type " + targetName + " doesn't exists.");
+
+            Attribute reverse = target.getAttribute(reverseName);
+            if (null == reverse)
+                throw new RuntimeException(
+                    "Reverse relation attribute " + reverseName + " on target type "
+                            + targetName + " doesn't exists.");
+
+            if (reverse.type.primitive != Primitive.REFERENCE)
+                throw new RuntimeException(
+                    "Reverse relation attribute " + reverseName + " on target type "
+                            + targetName + " is of type " + reverse.type
+                            + ", but should be " + Primitive.REFERENCE + ".");
+
+            return new Relation(target, reverse);
+        }
     }
 
-    public String getTargetEntityName() {
-        return targetEntityName;
-    }
+    public final EntityType target;
+    public final Attribute  reverse;
 
-    public String getReverseAttributeName() {
-        return reverseAttributeName;
+    Relation(EntityType target, Attribute reverse) {
+        this.target = target;
+        this.reverse = reverse;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(targetEntityName, reverseAttributeName);
+        return Objects.hash(target.name, reverse.name);
     }
 
     @Override
@@ -34,13 +65,13 @@ public class Relation {
             return false;
 
         Relation other = (Relation) obj;
-        return Objects.equals(this.targetEntityName, other.targetEntityName)
-                && Objects.equals(this.reverseAttributeName, other.reverseAttributeName);
+        return Objects.equals(this.target.name, other.target.name)
+                && Objects.equals(this.reverse.name, other.reverse.name);
     }
 
     @Override
     public String toString() {
-        return "Relation [target=" + targetEntityName + ", reverse=" + reverseAttributeName + "]";
+        return "Relation [target=" + target.name + ", reverse=" + reverse.name + "]";
     }
 
 }
