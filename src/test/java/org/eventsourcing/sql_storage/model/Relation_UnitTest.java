@@ -5,12 +5,16 @@ import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE;
 import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE_LIST;
 import static org.junit.Assert.assertSame;
 
+import org.eventsourcing.sql_storage.data.Ref;
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class Relation_UnitTest {
+    static final Ref ENTITY_ID  = new Ref(1, 1);
+    static final Ref ENTITY_ID1 = new Ref(1, 2);
+    static final Ref ENTITY_ID2 = new Ref(1, 3);
 
     static final String ENTITY_NAME  = "Entity";
     static final String ENTITY_NAME1 = "Hello";
@@ -20,13 +24,13 @@ public class Relation_UnitTest {
     static final String ATTR_NAME2 = "second";
 
     final Model MODEL = new Model.Builder()
-        .type(ENTITY_NAME, (t) -> t
+        .type(ENTITY_ID, ENTITY_NAME, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE, ENTITY_NAME, ATTR_NAME2)
             .attribute(ATTR_NAME2, REFERENCE_LIST, ENTITY_NAME, ATTR_NAME1))
-        .type(ENTITY_NAME1, (t) -> t
+        .type(ENTITY_ID1, ENTITY_NAME1, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, INTEGER))
-        .type(ENTITY_NAME2, (t) -> t
+        .type(ENTITY_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, INTEGER))
         .build();

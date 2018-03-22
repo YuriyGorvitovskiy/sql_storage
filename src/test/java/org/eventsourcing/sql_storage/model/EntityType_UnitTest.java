@@ -9,12 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.eventsourcing.sql_storage.data.Ref;
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class EntityType_UnitTest {
+
+    static final Ref ENTITY_ID  = new Ref(1, 1);
+    static final Ref ENTITY_ID1 = new Ref(1, 2);
+    static final Ref ENTITY_ID2 = new Ref(1, 3);
 
     static final String ENTITY_NAME  = "Entity";
     static final String ENTITY_NAME1 = "Hello";
@@ -24,19 +29,28 @@ public class EntityType_UnitTest {
     static final String ATTR_NAME2 = "second";
 
     final Model MODEL1 = new Model.Builder()
-        .type(ENTITY_NAME1, (t) -> t
+        .type(ENTITY_ID1, ENTITY_NAME1, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, STRING))
-        .type(ENTITY_NAME2, (t) -> t
+        .type(ENTITY_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, STRING))
         .build();
 
     final Model MODEL2 = new Model.Builder()
-        .type(ENTITY_NAME1, (t) -> t
+        .type(ENTITY_ID2, ENTITY_NAME1, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, STRING))
-        .type(ENTITY_NAME2, (t) -> t
+        .type(ENTITY_ID1, ENTITY_NAME2, (t) -> t
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING))
+        .build();
+
+    final Model MODEL3 = new Model.Builder()
+        .type(ENTITY_ID1, ENTITY_NAME1, (t) -> t
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME2, STRING))
+        .type(ENTITY_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, STRING)
             .attribute(ATTR_NAME2, INTEGER))
         .build();
@@ -51,6 +65,7 @@ public class EntityType_UnitTest {
 
         // Execute
         EntityType type = new EntityType.Builder()
+            .id(ENTITY_ID)
             .name(ENTITY_NAME)
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, STRING_LIST)
@@ -58,6 +73,7 @@ public class EntityType_UnitTest {
 
         // Verify
         assertSame(MODEL1, type.owner);
+        assertSame(ENTITY_ID, type.id);
         assertSame(ENTITY_NAME, type.name);
         assertSame(ATTR_NAME1, type.getAttribute(ATTR_NAME1).name);
         assertSame(INTEGER, type.getAttribute(ATTR_NAME1).type);
@@ -74,6 +90,24 @@ public class EntityType_UnitTest {
         // Rule
         exception.expect(RuntimeException.class);
         exception.expectMessage("has duplicate Attribute names");
+
+        // Execute
+        new EntityType.Builder()
+            .id(ENTITY_ID)
+            .name(ENTITY_NAME)
+            .attribute(ATTR_NAME1, INTEGER)
+            .attribute(ATTR_NAME1, STRING_LIST)
+            .build(MODEL1, resolvers);
+    }
+
+    @Test
+    public void builder_no_id() {
+        // Setup
+        final List<Consumer<Model>> resolvers = new ArrayList<>();
+
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("no id specified");
 
         // Execute
         new EntityType.Builder()
@@ -94,6 +128,7 @@ public class EntityType_UnitTest {
 
         // Execute
         new EntityType.Builder()
+            .id(ENTITY_ID)
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME1, STRING_LIST)
             .build(MODEL1, resolvers);
@@ -102,14 +137,17 @@ public class EntityType_UnitTest {
     @Test
     public void equals_and_hash() {
         // Setup
-        final EntityType ENTITY_N1_A1 = MODEL1.getEntityType(ENTITY_NAME1);
-        final EntityType ENTITY_N2_A1 = MODEL1.getEntityType(ENTITY_NAME2);
-        final EntityType ENTITY_N2_A2 = MODEL2.getEntityType(ENTITY_NAME2);
-        final EntityType ENTITY_N1_A1_COPY = MODEL2.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_I1_N1_A1 = MODEL1.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_I2_N2_A1 = MODEL1.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I2_N1_A1 = MODEL2.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_I1_N2_A1 = MODEL2.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I2_N2_A2 = MODEL3.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I1_N1_A1_COPY = MODEL3.getEntityType(ENTITY_NAME1);
 
         // Execute & Verify
-        Asserts.assertEquality(ENTITY_N1_A1, ENTITY_N1_A1_COPY);
+        Asserts.assertEquality(ENTITY_I1_N1_A1, ENTITY_I1_N1_A1_COPY);
 
-        Asserts.assertInequality(null, ENTITY_N1_A1, ENTITY_N2_A1, ENTITY_N2_A2);
+        Asserts.assertInequality(null, ENTITY_I1_N1_A1, ENTITY_I2_N2_A1, ENTITY_I2_N1_A1, ENTITY_I1_N2_A1,
+            ENTITY_I2_N2_A2);
     }
 }
