@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.eventsourcing.sql_storage.data.Ref;
-
 public class Model {
 
     public static class Builder {
@@ -24,8 +22,8 @@ public class Model {
             return this;
         }
 
-        public Builder type(Ref id, String name, Consumer<EntityType.Builder> typeDefiner) {
-            return type((t) -> typeDefiner.accept(t.id(id).name(name)));
+        public Builder type(long typeId, String name, Consumer<EntityType.Builder> typeDefiner) {
+            return type((t) -> typeDefiner.accept(t.typeId(typeId).name(name)));
         }
 
         public Model build() {
