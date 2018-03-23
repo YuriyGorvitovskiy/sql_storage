@@ -18,6 +18,9 @@ public class EntityType {
         List<Consumer<Attribute.Builder>> attributeDefiners = new ArrayList<>();
 
         Builder() {
+            attributeDefiners.add(a -> a
+                .name(Attribute.ID)
+                .type(ValueType.REFERENCE));
         }
 
         public Builder typeId(long typeId) {
