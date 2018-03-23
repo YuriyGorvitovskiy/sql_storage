@@ -1,6 +1,7 @@
 package org.eventsourcing.sql_storage.model;
 
 import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
+import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE;
 import static org.eventsourcing.sql_storage.model.ValueType.STRING;
 import static org.eventsourcing.sql_storage.model.ValueType.STRING_LIST;
 import static org.junit.Assert.assertSame;
@@ -74,11 +75,18 @@ public class EntityType_UnitTest {
         assertSame(MODEL1, type.owner);
         assertSame(TYPE_ID, type.typeId);
         assertSame(ENTITY_NAME, type.name);
+
+        assertSame(Attribute.ID, type.getAttribute(Attribute.ID).name);
+        assertSame(REFERENCE, type.getAttribute(Attribute.ID).type);
+        assertSame(0, type.getAttribute(Attribute.ID).relations.size());
+
         assertSame(ATTR_NAME1, type.getAttribute(ATTR_NAME1).name);
         assertSame(INTEGER, type.getAttribute(ATTR_NAME1).type);
+
         assertSame(ATTR_NAME2, type.getAttribute(ATTR_NAME2).name);
         assertSame(STRING_LIST, type.getAttribute(ATTR_NAME2).type);
-        assertSame(2, type.attributes.size());
+
+        assertSame(3, type.attributes.size());
     }
 
     @Test

@@ -48,7 +48,7 @@ public class Attribute {
             Map<String, Relation> relationMap = new HashMap<>();
             Attribute attribute = new Attribute(entityType, name, type, relationMap);
 
-            if (Primitive.REFERENCE == type.primitive && relationDefiners.isEmpty())
+            if (Primitive.REFERENCE == type.primitive && relationDefiners.isEmpty() && !Attribute.ID.equals(name))
                 throw new RuntimeException(
                     "Attribute " + attribute + " of type " + type + " has no relation defined.");
 
@@ -72,6 +72,8 @@ public class Attribute {
             return attribute;
         }
     }
+
+    public static final String ID = "id";
 
     public final EntityType            owner;
     public final String                name;
