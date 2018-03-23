@@ -110,7 +110,6 @@ public class Attribute {
 
     @Override
     public String toString() {
-        return "Attribute [owner=" + owner.name + ", name=" + name + ", type=" + type + ", relations=" + relations
-                + "]";
+        return "Attribute [owner=" + owner.name + ", name=" + name + ", type=" + type + "]";
     }
 }

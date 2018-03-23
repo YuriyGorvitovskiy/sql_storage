@@ -112,6 +112,40 @@ public class Model_UnitTest {
     }
 
     @Test
+    public void builder_duplicate_typeId() {
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("duplicate Entity Type Ids");
+
+        // Execute
+        new Model.Builder()
+            .type(TYPE_ID1, ENTITY_NAME1, t -> {})
+            .type(TYPE_ID2, ENTITY_NAME2, t -> {})
+            .type(TYPE_ID2, ENTITY_NAME3, t -> {})
+            .build();
+    }
+
+    @Test
+    public void builder_no_reverse() {
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("has inconsistent relation");
+
+        // Execute
+        new Model.Builder()
+            .type(TYPE_ID1, ENTITY_NAME1, t -> t
+                .attribute(ATTR_NAME1, REFERENCE, a -> a
+                    .relation(ENTITY_NAME3, ATTR_NAME1)))
+            .type(TYPE_ID2, ENTITY_NAME2, t -> t
+                .attribute(ATTR_NAME1, REFERENCE, a -> a
+                    .relation(ENTITY_NAME3, ATTR_NAME1)))
+            .type(TYPE_ID3, ENTITY_NAME3, t -> t
+                .attribute(ATTR_NAME1, REFERENCE, a -> a
+                    .relation(ENTITY_NAME2, ATTR_NAME1)))
+            .build();
+    }
+
+    @Test
     public void equals_and_hash() {
         // Execute & Verify
         Asserts.assertEquality(MODEL1, MODEL2);

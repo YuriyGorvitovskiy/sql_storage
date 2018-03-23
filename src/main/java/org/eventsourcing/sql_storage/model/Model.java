@@ -27,8 +27,9 @@ public class Model {
         }
 
         public Model build() {
-            Map<String, EntityType> classMap = new HashMap<>();
-            Model model = new Model(classMap);
+            Map<Long, EntityType> typeIdMap = new HashMap<>();
+            Map<String, EntityType> typeNameMap = new HashMap<>();
+            Model model = new Model(typeNameMap);
 
             // first pass
             List<Consumer<Model>> resolvers = new ArrayList<>();
@@ -37,7 +38,12 @@ public class Model {
                 typeDefiner.accept(builder);
 
                 EntityType entityType = builder.build(model, resolvers);
-                EntityType duplicate = classMap.put(entityType.name, entityType);
+                EntityType duplicate = typeIdMap.put(entityType.typeId, entityType);
+                if (null != duplicate)
+                    throw new RuntimeException(
+                        "Model has duplicate Entity Type Ids: " + duplicate + " & " + entityType);
+
+                duplicate = typeNameMap.put(entityType.name, entityType);
                 if (null != duplicate)
                     throw new RuntimeException(
                         "Model has duplicate Entity Type names: " + duplicate + " & " + entityType);
@@ -47,8 +53,27 @@ public class Model {
             for (Consumer<Model> resolver : resolvers) {
                 resolver.accept(model);
             }
+
+            // third validation pass
+            for (EntityType type : model.entityTypes.values()) {
+                for (Attribute attr : type.attributes.values()) {
+                    for (Relation relation : attr.relations.values()) {
+                        checkReverseRelation(attr, relation);
+                    }
+                }
+            }
             return model;
         }
+
+        private void checkReverseRelation(Attribute attr, Relation relation) {
+            for (Relation reverseRelation : relation.reverse.relations.values()) {
+                if (reverseRelation.reverse == attr)
+                    return;
+            }
+            throw new RuntimeException(
+                attr + " has inconsistent relation " + relation);
+        }
+
     }
 
     public final Map<String, EntityType> entityTypes;
