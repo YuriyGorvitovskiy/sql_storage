@@ -8,21 +8,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.eventsourcing.sql_storage.data.Ref;
 import org.eventsourcing.sql_storage.util.Helper;
 
 public class EntityType {
 
     public static class Builder {
-        Ref                               id;
+        Long                              typeId;
         String                            name;
         List<Consumer<Attribute.Builder>> attributeDefiners = new ArrayList<>();
 
         Builder() {
         }
 
-        public Builder id(Ref id) {
-            this.id = id;
+        public Builder typeId(long typeId) {
+            this.typeId = typeId;
             return this;
         }
 
@@ -60,14 +59,14 @@ public class EntityType {
         }
 
         public EntityType build(Model model, List<Consumer<Model>> resolvers) {
-            if (null == id)
+            if (null == typeId)
                 throw new RuntimeException("Entity Type has no id specified");
 
             if (Helper.isEmpty(name))
                 throw new RuntimeException("Entity Type has no name specified");
 
             Map<String, Attribute> attributeMap = new HashMap<>();
-            EntityType type = new EntityType(model, id, name, attributeMap);
+            EntityType type = new EntityType(model, typeId, name, attributeMap);
 
             for (Consumer<Attribute.Builder> attributeDefiner : attributeDefiners) {
                 Attribute.Builder builder = new Attribute.Builder();
@@ -84,13 +83,13 @@ public class EntityType {
     }
 
     public final Model                  owner;
-    public final Ref                    id;
+    public final long                   typeId;
     public final String                 name;
     public final Map<String, Attribute> attributes;
 
-    EntityType(Model owner, Ref id, String name, Map<String, Attribute> attributeMap) {
+    EntityType(Model owner, long typeId, String name, Map<String, Attribute> attributeMap) {
         this.owner = owner;
-        this.id = id;
+        this.typeId = typeId;
         this.name = name;
         this.attributes = Collections.unmodifiableMap(attributeMap);
     }
@@ -101,7 +100,7 @@ public class EntityType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, attributes);
+        return Objects.hash(typeId, name, attributes);
     }
 
     @Override
@@ -113,7 +112,7 @@ public class EntityType {
             return false;
 
         EntityType other = (EntityType) obj;
-        return Objects.equals(this.id, other.id)
+        return Objects.equals(this.typeId, other.typeId)
                 && Objects.equals(this.name, other.name)
                 && Objects.equals(this.attributes, other.attributes);
     }
