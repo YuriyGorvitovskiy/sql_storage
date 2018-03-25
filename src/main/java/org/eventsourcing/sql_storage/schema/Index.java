@@ -43,6 +43,8 @@ public class Index {
                 Column column = owner.columns.get(columnName);
                 if (null == column)
                     throw new RuntimeException("Table " + owner.name + " has no column " + columnName + " specified.");
+
+                columnsList.add(column);
             }
             return new Index(owner, name, columnsList);
         }

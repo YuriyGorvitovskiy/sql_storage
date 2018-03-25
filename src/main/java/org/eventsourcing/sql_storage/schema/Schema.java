@@ -36,7 +36,7 @@ public class Schema {
                 Table duplicate = tableMap.put(table.name, table);
                 if (null != duplicate)
                     throw new RuntimeException(
-                        "Model has duplicate Table names: " + duplicate + " & " + table);
+                        "Model has duplicate table names: " + duplicate + " & " + table);
             }
             return new Schema(tableMap);
         }
@@ -46,6 +46,10 @@ public class Schema {
 
     Schema(Map<String, Table> tables) {
         this.tables = Collections.unmodifiableMap(tables);
+    }
+
+    public Table getTable(String name) {
+        return tables.get(name);
     }
 
     @Override

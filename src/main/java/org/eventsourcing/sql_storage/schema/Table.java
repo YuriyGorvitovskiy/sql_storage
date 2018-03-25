@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.eventsourcing.sql_storage.model.Primitive;
 import org.eventsourcing.sql_storage.util.Helper;
 
 public class Table {
@@ -36,7 +35,7 @@ public class Table {
             return this;
         }
 
-        public Builder column(String name, Primitive type) {
+        public Builder column(String name, DataType type) {
             return column((c) -> c
                 .name(name)
                 .type(type));
@@ -58,6 +57,9 @@ public class Table {
             if (Helper.isEmpty(name))
                 throw new RuntimeException("Table has no name specified");
 
+            if (columnDefiners.isEmpty())
+                throw new RuntimeException("Table " + name + " has no columns specified");
+
             Map<String, Column> columnMap = new HashMap<>();
             Map<String, Index> indexMap = new HashMap<>();
             Table table = new Table(name, columnMap, indexMap);
@@ -70,7 +72,7 @@ public class Table {
                 Column duplicate = columnMap.put(column.name, column);
                 if (null != duplicate)
                     throw new RuntimeException(
-                        "Table has duplicate Column names: " + duplicate + " & " + column);
+                        "Table has duplicate column names: " + duplicate + " & " + column);
             }
 
             for (Consumer<Index.Builder> indexDefiner : indexDefiners) {
@@ -81,7 +83,7 @@ public class Table {
                 Index duplicate = indexMap.put(index.name, index);
                 if (null != duplicate)
                     throw new RuntimeException(
-                        "Table has duplicate Index names: " + duplicate + " & " + index);
+                        "Table has duplicate index names: " + duplicate + " & " + index);
             }
 
             return table;
@@ -96,6 +98,14 @@ public class Table {
         this.name = name;
         this.columns = Collections.unmodifiableMap(columns);
         this.indexes = Collections.unmodifiableMap(indexes);
+    }
+
+    public Column getColumn(String name) {
+        return columns.get(name);
+    }
+
+    public Index getIndex(String name) {
+        return indexes.get(name);
     }
 
     @Override

@@ -2,15 +2,14 @@ package org.eventsourcing.sql_storage.schema;
 
 import java.util.Objects;
 
-import org.eventsourcing.sql_storage.model.Primitive;
 import org.eventsourcing.sql_storage.util.Helper;
 
 public class Column {
 
     public static class Builder {
 
-        String    name;
-        Primitive type;
+        String   name;
+        DataType type;
 
         public Builder() {
         }
@@ -20,7 +19,7 @@ public class Column {
             return this;
         }
 
-        public Builder type(Primitive type) {
+        public Builder type(DataType type) {
             this.type = type;
             return this;
         }
@@ -36,11 +35,11 @@ public class Column {
         }
     }
 
-    public final Table     owner;
-    public final String    name;
-    public final Primitive type;
+    public final Table    owner;
+    public final String   name;
+    public final DataType type;
 
-    Column(Table owner, String name, Primitive type) {
+    Column(Table owner, String name, DataType type) {
         this.owner = owner;
         this.name = name;
         this.type = type;
