@@ -79,7 +79,7 @@ public class EntityType {
                 Attribute duplicate = attributeMap.put(attribute.name, attribute);
                 if (null != duplicate)
                     throw new RuntimeException(
-                        "Model has duplicate Attribute names: " + duplicate + " & " + attribute);
+                        "Entity Type has duplicate Attribute names: " + duplicate + " & " + attribute);
             }
             return type;
         }
