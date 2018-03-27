@@ -51,34 +51,21 @@ public class Helper {
     }
 
     public static boolean isEmpty(String name) {
-        // TODO Auto-generated method stub
         return null == name || name.length() == 0;
     }
 
     public static String resourceAsString(Class<?> clazz, String resourceName) {
-        return processResource(
-            () -> new Scanner(clazz.getResourceAsStream(resourceName), UTF_8),
-            (s) -> s.useDelimiter("\\A").next(),
-            (e) -> {
-                throw new RuntimeException(
-                    "Failed to load resource '" + resourceName + "' from class " + clazz.getName(), e);
-            });
+        return scanResource(clazz, resourceName, (s) -> s.useDelimiter("\\A").next());
     }
 
     public static List<String> resourceAsLines(Class<?> clazz, String resourceName) {
-        return processResource(
-            () -> new Scanner(clazz.getResourceAsStream(resourceName), UTF_8),
-            (s) -> {
-                List<String> list = new ArrayList<>();
-                while (s.hasNextLine()) {
-                    list.add(s.nextLine());
-                }
-                return list;
-            },
-            (e) -> {
-                throw new RuntimeException(
-                    "Failed to load resource '" + resourceName + "' from class " + clazz.getName(), e);
-            });
+        return scanResource(clazz, resourceName, (s) -> {
+            List<String> list = new ArrayList<>();
+            while (s.hasNextLine()) {
+                list.add(s.nextLine());
+            }
+            return list;
+        });
     }
 
     public static Set<String> resourceAsDictionary(Class<?> clazz, String resourceName) {
@@ -86,6 +73,16 @@ public class Helper {
             .map(s -> s.trim().toLowerCase())
             .filter(s -> !s.isEmpty())
             .collect(Collectors.toSet());
+    }
+
+    public static <R> R scanResource(Class<?> clazz, String resourceName, Function<Scanner, R> process) {
+        return processResource(
+            () -> new Scanner(clazz.getResourceAsStream(resourceName), UTF_8),
+            process,
+            (e) -> {
+                throw new RuntimeException(
+                    "Failed to load resource '" + resourceName + "' from class " + clazz.getName(), e);
+            });
     }
 
     public static <C extends AutoCloseable, R> R processResource(
