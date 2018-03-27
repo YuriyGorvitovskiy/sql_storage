@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.eventsourcing.sql_storage.test.Asserts;
@@ -84,16 +85,6 @@ public class Helper_UnitTest {
     }
 
     @Test
-    public void resourceAsString_noResource() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("non-existing");
-
-        // Execute
-        Helper.resourceAsString(Helper.class, "non-existing");
-    }
-
-    @Test
     public void resourceAsLines() {
         // Setup
         List<String> expected = Arrays.asList("  Line1", "", " Line2");
@@ -103,16 +94,6 @@ public class Helper_UnitTest {
 
         // Verify
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void resourceAsLines_noResource() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("non-existing");
-
-        // Execute
-        Helper.resourceAsLines(Helper.class, "non-existing");
     }
 
     @Test
@@ -127,6 +108,31 @@ public class Helper_UnitTest {
 
         // Verify
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void scanResource_success() {
+        // Setup
+        final String SUCCESS = "success";
+
+        // Execute
+        String actual = Helper.scanResource(Helper.class, "resourceAsString.txt", (s) -> {
+            assertEquals(Scanner.class, s.getClass());
+            return SUCCESS;
+        });
+
+        // Verify
+        assertEquals(SUCCESS, actual);
+    }
+
+    @Test
+    public void scanResource_noResource() {
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("non-existing");
+
+        // Execute
+        Helper.scanResource(Helper.class, "non-existing", (s) -> null);
     }
 
     @Test
