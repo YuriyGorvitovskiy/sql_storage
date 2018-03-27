@@ -7,15 +7,11 @@ import org.eventsourcing.sql_storage.util.Helper;
 
 public class Database {
 
-    final int         maxTableNameLength;
-    final int         maxColumnNameLength;
+    final int         maxidentifierLength;
     final Set<String> reservedKeywords;
 
-    protected Database(int maxTableNameLength,
-            int maxColumnNameLength,
-            String reservedWordsResource) {
-        this.maxTableNameLength = maxTableNameLength;
-        this.maxColumnNameLength = maxColumnNameLength;
+    protected Database(int maxidentifierLength, String reservedWordsResource) {
+        this.maxidentifierLength = maxidentifierLength;
         this.reservedKeywords = Collections.unmodifiableSet(
             Helper.resourceAsDictionary(getClass(), reservedWordsResource));
     }
