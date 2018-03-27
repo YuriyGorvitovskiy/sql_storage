@@ -9,8 +9,7 @@ public class Postgres_UnitTest {
     @Test
     public void test_DATATBASE() {
         // Verify
-        assertEquals(63, Postgres.DATABASE.maxColumnNameLength);
-        assertEquals(63, Postgres.DATABASE.maxTableNameLength);
+        assertEquals(63, Postgres.DATABASE.maxidentifierLength);
         assertEquals(756, Postgres.DATABASE.reservedKeywords.size());
     }
 

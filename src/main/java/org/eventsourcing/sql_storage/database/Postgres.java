@@ -4,7 +4,7 @@ public class Postgres extends Database {
     public static final Postgres DATABASE = new Postgres();
 
     private Postgres() {
-        super(63, 63, "PostgresKeywords.txt");
+        super(63, "PostgresKeywords.txt");
     }
 
 }
