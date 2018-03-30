@@ -1,11 +1,14 @@
 package org.eventsourcing.sql_storage.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class Model {
@@ -55,11 +58,13 @@ public class Model {
             }
 
             // third validation pass
+            Set<AttributeId> processed = new HashSet<AttributeId>();
             for (EntityType type : model.entityTypes.values()) {
                 for (Attribute attr : type.attributes.values()) {
                     for (Relation relation : attr.relations.values()) {
                         checkReverseRelation(attr, relation);
                     }
+                    checkCombineRelationConsistency(attr, processed);
                 }
             }
             return model;
@@ -74,6 +79,40 @@ public class Model {
                 attr + " has inconsistent relation " + relation);
         }
 
+        private void checkCombineRelationConsistency(Attribute attr, Set<AttributeId> processed) {
+            if (attr.relations.isEmpty())
+                return;
+
+            AttributeId id = new AttributeId(attr);
+            if (!processed.add(id))
+                return;
+
+            Set<AttributeId> left = new HashSet<>();
+            Set<AttributeId> right = new HashSet<>();
+            left.add(id);
+            fillCombineRelation(attr.relations.values(), left, right, processed);
+            left.retainAll(right);
+            if (left.isEmpty())
+                return;
+
+            throw new RuntimeException(
+                "The following attribute(s) are present on both sides of the combined relation: " + left);
+
+        }
+
+        private void fillCombineRelation(Collection<Relation> relations,
+                Set<AttributeId> left,
+                Set<AttributeId> right,
+                Set<AttributeId> processed) {
+            for (Relation relation : relations) {
+                AttributeId id = new AttributeId(relation.reverse);
+                right.add(id);
+                if (!processed.add(id))
+                    continue;
+                fillCombineRelation(relation.reverse.relations.values(), right, left, processed);
+            }
+        }
+
     }
 
     public final Map<String, EntityType> entityTypes;
@@ -84,6 +123,13 @@ public class Model {
 
     public EntityType getEntityType(String entityTypeName) {
         return entityTypes.get(entityTypeName);
+    }
+
+    public Attribute getAttribute(String entityTypeName, String attributeName) {
+        EntityType type = entityTypes.get(entityTypeName);
+        if (null == type)
+            return null;
+        return type.attributes.get(attributeName);
     }
 
     @Override

@@ -42,14 +42,12 @@ public class Attrtibute_UnitTest {
             .attribute(ATTR_NAME3, STRING))
         .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE, (a) -> a
-                .relation(ENTITY_NAME1, ATTR_NAME1)
-                .relation(ENTITY_NAME3, ATTR_NAME1))
+                .relation(ENTITY_NAME1, ATTR_NAME1))
             .attribute(ATTR_NAME2, INTEGER)
             .attribute(ATTR_NAME3, STRING))
         .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE, (a) -> a
-                .relation(ENTITY_NAME1, ATTR_NAME1)
-                .relation(ENTITY_NAME2, ATTR_NAME1))
+                .relation(ENTITY_NAME1, ATTR_NAME1))
             .attribute(ATTR_NAME2, STRING)
             .attribute(ATTR_NAME3, INTEGER))
         .build();
@@ -63,14 +61,12 @@ public class Attrtibute_UnitTest {
             .attribute(ATTR_NAME3, STRING))
         .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE, (a) -> a
-                .relation(ENTITY_NAME1, ATTR_NAME1)
-                .relation(ENTITY_NAME3, ATTR_NAME1))
+                .relation(ENTITY_NAME1, ATTR_NAME1))
             .attribute(ATTR_NAME2, INTEGER)
             .attribute(ATTR_NAME3, STRING))
         .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE, (a) -> a
-                .relation(ENTITY_NAME1, ATTR_NAME1)
-                .relation(ENTITY_NAME2, ATTR_NAME1))
+                .relation(ENTITY_NAME1, ATTR_NAME1))
             .attribute(ATTR_NAME2, STRING)
             .attribute(ATTR_NAME3, INTEGER))
         .build();
