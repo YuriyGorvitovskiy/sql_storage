@@ -5,6 +5,7 @@ import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE;
 import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE_LIST;
 import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE_MAP;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.eventsourcing.sql_storage.test.Asserts;
@@ -85,7 +86,8 @@ public class Model_UnitTest {
     public void builder_direct() {
         // Execute
         Model model = new Model.Builder()
-            .type(TYPE_ID1, ENTITY_NAME1, c -> {})
+            .type(TYPE_ID1, ENTITY_NAME1, c -> c
+                .attribute(ATTR_NAME1, INTEGER))
             .type(TYPE_ID2, ENTITY_NAME2, c -> {})
             .type(TYPE_ID3, ENTITY_NAME3, c -> {})
             .build();
@@ -95,6 +97,13 @@ public class Model_UnitTest {
         assertSame(ENTITY_NAME2, model.getEntityType(ENTITY_NAME2).name);
         assertSame(ENTITY_NAME3, model.getEntityType(ENTITY_NAME3).name);
         assertEquals(3, model.entityTypes.size());
+
+        assertEquals(
+            model.getEntityType(ENTITY_NAME1).getAttribute(ATTR_NAME1),
+            model.getAttribute(ENTITY_NAME1, ATTR_NAME1));
+
+        assertNull(model.getAttribute(ENTITY_NAME1, "Not Exists"));
+        assertNull(model.getAttribute("Not Exists", ATTR_NAME1));
     }
 
     @Test
@@ -142,6 +151,29 @@ public class Model_UnitTest {
             .type(TYPE_ID3, ENTITY_NAME3, t -> t
                 .attribute(ATTR_NAME1, REFERENCE, a -> a
                     .relation(ENTITY_NAME2, ATTR_NAME1)))
+            .build();
+    }
+
+    @Test
+    public void builder_same_relation_on_both_sides() {
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(" are present on both sides of the combined relation");
+
+        // Execute
+        new Model.Builder()
+            .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
+                .attribute(ATTR_NAME1, REFERENCE, a -> a
+                    .relation(ENTITY_NAME2, ATTR_NAME2)
+                    .relation(ENTITY_NAME3, ATTR_NAME3)))
+            .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
+                .attribute(ATTR_NAME2, REFERENCE, a -> a
+                    .relation(ENTITY_NAME1, ATTR_NAME1)
+                    .relation(ENTITY_NAME3, ATTR_NAME3)))
+            .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
+                .attribute(ATTR_NAME3, REFERENCE, a -> a
+                    .relation(ENTITY_NAME1, ATTR_NAME1)
+                    .relation(ENTITY_NAME2, ATTR_NAME2)))
             .build();
     }
 

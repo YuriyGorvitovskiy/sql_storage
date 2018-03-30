@@ -11,25 +11,26 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class Relation_UnitTest {
-    static final long TYPE_ID  = 1;
-    static final long TYPE_ID1 = 2;
-    static final long TYPE_ID2 = 3;
+    static final long TYPE_ID1 = 1;
+    static final long TYPE_ID2 = 2;
+    static final long TYPE_ID3 = 3;
 
-    static final String ENTITY_NAME  = "Entity";
-    static final String ENTITY_NAME1 = "Hello";
-    static final String ENTITY_NAME2 = "World";
+    static final String ENTITY_NAME1 = "Entity";
+    static final String ENTITY_NAME2 = "Hello";
+    static final String ENTITY_NAME3 = "World";
 
     static final String ATTR_NAME1 = "first";
     static final String ATTR_NAME2 = "second";
+    static final String ATTR_NAME3 = "third";
 
     final Model MODEL = new Model.Builder()
-        .type(TYPE_ID, ENTITY_NAME, (t) -> t
-            .attribute(ATTR_NAME1, REFERENCE, ENTITY_NAME, ATTR_NAME2)
-            .attribute(ATTR_NAME2, REFERENCE_LIST, ENTITY_NAME, ATTR_NAME1))
         .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
+            .attribute(ATTR_NAME1, REFERENCE, ENTITY_NAME1, ATTR_NAME2)
+            .attribute(ATTR_NAME2, REFERENCE_LIST, ENTITY_NAME1, ATTR_NAME1))
+        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, INTEGER))
-        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
+        .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
             .attribute(ATTR_NAME1, INTEGER)
             .attribute(ATTR_NAME2, INTEGER))
         .build();
@@ -40,12 +41,12 @@ public class Relation_UnitTest {
     @Test
     public void builder_direct() {
         // Setup
-        final EntityType ENTITY = MODEL.getEntityType(ENTITY_NAME);
+        final EntityType ENTITY = MODEL.getEntityType(ENTITY_NAME1);
         final Attribute ATTR = ENTITY.getAttribute(ATTR_NAME1);
 
         // Execute
         Relation relation = new Relation.Builder()
-            .target(ENTITY_NAME)
+            .target(ENTITY_NAME1)
             .reverse(ATTR_NAME1)
             .build(MODEL);
 
@@ -87,7 +88,7 @@ public class Relation_UnitTest {
 
         // Execute
         new Relation.Builder()
-            .target(ENTITY_NAME)
+            .target(ENTITY_NAME1)
             .reverse("NOT EXISTS")
             .build(MODEL);
     }
@@ -100,7 +101,7 @@ public class Relation_UnitTest {
 
         // Execute
         new Relation.Builder()
-            .target(ENTITY_NAME)
+            .target(ENTITY_NAME1)
             .build(MODEL);
     }
 
@@ -112,7 +113,7 @@ public class Relation_UnitTest {
 
         // Execute
         new Relation.Builder()
-            .target(ENTITY_NAME1)
+            .target(ENTITY_NAME2)
             .reverse(ATTR_NAME1)
             .build(MODEL);
     }
@@ -120,8 +121,8 @@ public class Relation_UnitTest {
     @Test
     public void equals_and_hash() {
         // Setup
-        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME1);
-        final EntityType ENTITY2 = MODEL.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY1 = MODEL.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY2 = MODEL.getEntityType(ENTITY_NAME3);
 
         final Attribute ENTITY1_ATTR1 = ENTITY1.getAttribute(ATTR_NAME1);
         final Attribute ENTITY1_ATTR2 = ENTITY1.getAttribute(ATTR_NAME2);
