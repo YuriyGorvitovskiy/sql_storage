@@ -5,9 +5,7 @@ import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
 import static org.junit.Assert.assertSame;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class AttrtibuteId_UnitTest {
 
@@ -35,9 +33,6 @@ public class AttrtibuteId_UnitTest {
         .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME2, INTEGER))
         .build();
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void builder_direct() {
