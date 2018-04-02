@@ -69,7 +69,7 @@ public class Generator {
 
         return str
             .replaceAll("([^a-zA-Z0-9])", "_")
-            .replaceAll("^_+", "")
+            .replaceAll("^[_0-9]+", "")
             .replaceAll("_+$", "")
             .replaceAll("_+", "_");
     }

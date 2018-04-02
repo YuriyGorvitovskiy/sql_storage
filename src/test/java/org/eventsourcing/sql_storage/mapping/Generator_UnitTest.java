@@ -87,7 +87,10 @@ public class Generator_UnitTest {
         assertEquals("hello_World", subject.toLatinAlphaNumeric("helloПрописнойWorld"));
         assertEquals("HELLOCase", subject.toLatinAlphaNumeric("HELLOCaseМир"));
         assertEquals("hello_23", subject.toLatinAlphaNumeric("hello_23"));
-        assertEquals("123hello", subject.toLatinAlphaNumeric("123hello"));
+        assertEquals("hello", subject.toLatinAlphaNumeric("123hello"));
+        assertEquals("hello", subject.toLatinAlphaNumeric("_hello"));
+        assertEquals("hello", subject.toLatinAlphaNumeric("hello_"));
+        assertEquals("hello_world", subject.toLatinAlphaNumeric("hello___world"));
         assertEquals("", subject.toLatinAlphaNumeric("Привет"));
         assertEquals("", subject.toLatinAlphaNumeric(""));
         assertNull(subject.toLatinAlphaNumeric(null));
