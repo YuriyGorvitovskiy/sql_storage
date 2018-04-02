@@ -57,20 +57,8 @@ public class Generator {
             return null;
 
         return str
-            .replaceAll("([a-z])([A-Z])", "$1_$2")
+            .replaceAll("([a-z0-9])([A-Z])", "$1_$2")
             .replaceAll("([A-Z])([A-Z][a-z])", "$1_$2")
-            .replaceAll("([0-9])([a-zA-Z])", "$1_$2")
             .replaceAll("([a-zA-Z])([0-9])", "$1_$2");
-    }
-
-    public String toLatinAlphaNumeric(String str) {
-        if (str == null)
-            return null;
-
-        return str
-            .replaceAll("([^a-zA-Z0-9])", "_")
-            .replaceAll("^_+", "")
-            .replaceAll("_+$", "")
-            .replaceAll("_+", "_");
     }
 }
