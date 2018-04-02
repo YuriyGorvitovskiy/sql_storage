@@ -69,9 +69,6 @@ public class Generator_UnitTest {
         assertEquals("hello_CASE_World", subject.toSnakeCase("helloCASEWorld"));
         assertEquals("HELLO_Case_World", subject.toSnakeCase("HELLOCaseWorld"));
         assertEquals("hello_case_world", subject.toSnakeCase("hello_case_world"));
-        assertEquals("123_hello_World", subject.toSnakeCase("123helloWorld"));
-        assertEquals("hello_456_World", subject.toSnakeCase("hello456World"));
-        assertEquals("hello_World_789", subject.toSnakeCase("helloWorld789"));
         assertEquals("hello", subject.toSnakeCase("hello"));
         assertEquals("", subject.toSnakeCase(""));
         assertNull(subject.toSnakeCase(null));
