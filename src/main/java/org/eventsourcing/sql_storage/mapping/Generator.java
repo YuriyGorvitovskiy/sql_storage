@@ -61,4 +61,15 @@ public class Generator {
             .replaceAll("([A-Z])([A-Z][a-z])", "$1_$2")
             .replaceAll("([a-zA-Z])([0-9])", "$1_$2");
     }
+
+    public String toLatinAlphaNumeric(String str) {
+        if (str == null)
+            return null;
+
+        return str
+            .replaceAll("([^a-zA-Z0-9])", "_")
+            .replaceAll("^[_0-9]+", "")
+            .replaceAll("_+$", "")
+            .replaceAll("_+", "_");
+    }
 }
