@@ -1,6 +1,7 @@
 package org.eventsourcing.sql_storage.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.eventsourcing.sql_storage.model.Model;
 import org.eventsourcing.sql_storage.model.Primitive;
@@ -12,7 +13,7 @@ import org.junit.Test;
 public class Generator_UnitTest {
 
     @Test
-    public void test() {
+    public void generate() {
         // Setup
         Model model = new Model.Builder()
             .type(1, "type_a", t -> t
@@ -56,6 +57,21 @@ public class Generator_UnitTest {
         assertEquals(DataType.INTEGER, subject.convert(Primitive.REFERENCE));
         assertEquals(DataType.VARCHAR, subject.convert(Primitive.STRING));
         assertEquals(DataType.TEXT, subject.convert(Primitive.TEXT));
+    }
+
+    @Test
+    public void toSnakeCase() {
+        // Setup
+        Generator subject = new Generator();
+
+        // Execute & Verify
+        assertEquals("hello_Case_World", subject.toSnakeCase("helloCaseWorld"));
+        assertEquals("hello_CASE_World", subject.toSnakeCase("helloCASEWorld"));
+        assertEquals("HELLO_Case_World", subject.toSnakeCase("HELLOCaseWorld"));
+        assertEquals("hello_case_world", subject.toSnakeCase("hello_case_world"));
+        assertEquals("hello", subject.toSnakeCase("hello"));
+        assertEquals("", subject.toSnakeCase(""));
+        assertNull(subject.toSnakeCase(null));
     }
 
 }
