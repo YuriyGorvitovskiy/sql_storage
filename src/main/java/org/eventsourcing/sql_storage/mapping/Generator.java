@@ -13,9 +13,9 @@ import org.eventsourcing.sql_storage.schema.Table;
 
 public class Generator {
 
-    public final String NAME_SEPARATOR         = "_";
-    public final String INDEX_PRIMARY_PREFIX   = "ixp_";
-    public final String INDEX_REFERENCE_PREFIX = "ixr_";
+    public static final String NAME_SEPARATOR         = "_";
+    public static final String INDEX_PRIMARY_PREFIX   = "ixp_";
+    public static final String INDEX_REFERENCE_PREFIX = "ixr_";
 
     public Schema generate(Model model) {
         Schema.Builder builder = new Schema.Builder();
