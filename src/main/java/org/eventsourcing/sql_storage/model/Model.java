@@ -64,6 +64,7 @@ public class Model {
                     for (Relation relation : attr.relations.values()) {
                         checkReverseRelation(attr, relation);
                     }
+                    checkReverseContainerTypes(attr);
                     checkCombineRelationConsistency(attr, processed);
                 }
             }
@@ -77,6 +78,21 @@ public class Model {
             }
             throw new RuntimeException(
                 attr + " has inconsistent relation " + relation);
+        }
+
+        private void checkReverseContainerTypes(Attribute attr) {
+            Container type = null;
+            Relation first = null;
+            for (Relation relation : attr.relations.values()) {
+                if (null == type) {
+                    type = relation.reverse.type.container;
+                    first = relation;
+                } else if (type != relation.reverse.type.container) {
+                    throw new RuntimeException(
+                        attr + " has different container type between reverse relations: "
+                                + first + " and " + relation);
+                }
+            }
         }
 
         private void checkCombineRelationConsistency(Attribute attr, Set<AttributeId> processed) {

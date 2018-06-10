@@ -54,7 +54,7 @@ public class Model_UnitTest {
             .typeId(TYPE_ID3)
             .name(ENTITY_NAME3)
             .attribute(ATTR_NAME1, (a) -> a
-                .type(REFERENCE)
+                .type(REFERENCE_LIST)
                 .relation((r) -> r
                     .target(ENTITY_NAME1)
                     .reverse(ATTR_NAME2))))
@@ -69,14 +69,14 @@ public class Model_UnitTest {
         .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE_LIST, ENTITY_NAME1, ATTR_NAME2))
         .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
-            .attribute(ATTR_NAME1, REFERENCE, ENTITY_NAME1, ATTR_NAME2))
+            .attribute(ATTR_NAME1, REFERENCE_LIST, ENTITY_NAME1, ATTR_NAME2))
         .build();
 
     final Model MODEL3 = new Model.Builder()
         .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
             .attribute(ATTR_NAME1, REFERENCE_LIST, ENTITY_NAME3, ATTR_NAME1))
         .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
-            .attribute(ATTR_NAME1, REFERENCE, ENTITY_NAME2, ATTR_NAME1))
+            .attribute(ATTR_NAME1, REFERENCE_LIST, ENTITY_NAME2, ATTR_NAME1))
         .build();
 
     @Rule
@@ -174,6 +174,25 @@ public class Model_UnitTest {
                 .attribute(ATTR_NAME3, REFERENCE, a -> a
                     .relation(ENTITY_NAME1, ATTR_NAME1)
                     .relation(ENTITY_NAME2, ATTR_NAME2)))
+            .build();
+    }
+
+    @Test
+    public void builder_different_relation_container_on_same_sides() {
+        // Rule
+        exception.expect(RuntimeException.class);
+        exception.expectMessage(" has different container type between reverse relations: ");
+
+        // Execute
+        new Model.Builder()
+            .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
+                .attribute(ATTR_NAME1, REFERENCE, a -> a
+                    .relation(ENTITY_NAME2, ATTR_NAME2)
+                    .relation(ENTITY_NAME3, ATTR_NAME3)))
+            .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
+                .attribute(ATTR_NAME2, REFERENCE_LIST, ENTITY_NAME1, ATTR_NAME1))
+            .type(TYPE_ID3, ENTITY_NAME3, (t) -> t
+                .attribute(ATTR_NAME3, REFERENCE_MAP, ENTITY_NAME1, ATTR_NAME1))
             .build();
     }
 

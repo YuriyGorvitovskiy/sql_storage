@@ -2,7 +2,9 @@ package org.eventsourcing.sql_storage.model;
 
 import static org.eventsourcing.sql_storage.model.ValueType.FLOATING;
 import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.eventsourcing.sql_storage.test.Asserts;
 import org.junit.Test;
@@ -45,6 +47,21 @@ public class AttrtibuteId_UnitTest {
         // Verify
         assertSame(ENTITY_NAME1, id1.className);
         assertSame(ATTR_NAME1, id1.attributeName);
+    }
+
+    @Test
+    public void comapare() {
+        // Setup
+        final Attribute ATTR1 = MODEL1.getAttribute(ENTITY_NAME1, ATTR_NAME1);
+        final Attribute ATTR2 = MODEL1.getAttribute(ENTITY_NAME1, ATTR_NAME2);
+        final Attribute ATTR3 = MODEL1.getAttribute(ENTITY_NAME2, ATTR_NAME1);
+
+        // Execute & Verify
+        assertEquals(0, new AttributeId(ATTR1).compareTo(new AttributeId(ATTR1)));
+        assertTrue(0 < new AttributeId(ATTR2).compareTo(new AttributeId(ATTR1)));
+        assertTrue(0 > new AttributeId(ATTR1).compareTo(new AttributeId(ATTR2)));
+        assertTrue(0 < new AttributeId(ATTR3).compareTo(new AttributeId(ATTR1)));
+        assertTrue(0 > new AttributeId(ATTR2).compareTo(new AttributeId(ATTR3)));
     }
 
     @Test

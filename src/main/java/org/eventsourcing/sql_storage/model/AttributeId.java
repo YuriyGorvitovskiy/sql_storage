@@ -2,7 +2,7 @@ package org.eventsourcing.sql_storage.model;
 
 import java.util.Objects;
 
-public class AttributeId {
+public class AttributeId implements Comparable<AttributeId> {
 
     final String className;
     final String attributeName;
@@ -31,7 +31,17 @@ public class AttributeId {
     }
 
     @Override
+    public int compareTo(AttributeId o) {
+        int cmp = className.compareTo(o.className);
+        if (0 == cmp)
+            cmp = attributeName.compareTo(o.attributeName);
+
+        return cmp;
+    }
+
+    @Override
     public String toString() {
         return "ModelAttributeid [class=" + className + ", attribute=" + attributeName + "]";
     }
+
 }
