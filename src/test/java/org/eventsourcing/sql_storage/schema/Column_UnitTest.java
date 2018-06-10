@@ -38,7 +38,7 @@ public class Column_UnitTest {
         Table table = schema.getTable(TABLE_NAME_1);
         Column column = table.getColumn(COLUMN_NAME_1);
 
-        assertEquals(table, column.owner);
+        assertEquals(table, column.table);
         assertEquals(COLUMN_NAME_1, column.name);
         assertEquals(FLOATING, column.type);
     }

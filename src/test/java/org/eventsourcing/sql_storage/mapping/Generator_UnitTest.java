@@ -1,7 +1,6 @@
 package org.eventsourcing.sql_storage.mapping;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.eventsourcing.sql_storage.model.Model;
 import org.eventsourcing.sql_storage.model.Primitive;
@@ -16,24 +15,121 @@ public class Generator_UnitTest {
     public void generate() {
         // Setup
         Model model = new Model.Builder()
-            .type(1, "type_a", t -> t
+            .type(1, "type_single", t -> t
                 .attribute("attr_boolean", ValueType.BOOLEAN)
                 .attribute("attr_datetime", ValueType.DATETIME)
                 .attribute("attr_floating", ValueType.FLOATING)
                 .attribute("attr_integer", ValueType.INTEGER)
+                .attribute("attr_reference", ValueType.REFERENCE, a -> a
+                    .relation("type_list", "attr_reference"))
                 .attribute("attr_string", ValueType.STRING)
                 .attribute("attr_text", ValueType.TEXT))
+            .type(2, "type_list", t -> t
+                .attribute("attr_boolean", ValueType.BOOLEAN_LIST)
+                .attribute("attr_datetime", ValueType.DATETIME_LIST)
+                .attribute("attr_floating", ValueType.FLOATING_LIST)
+                .attribute("attr_integer", ValueType.INTEGER_LIST)
+                .attribute("attr_reference", ValueType.REFERENCE_LIST, a -> a
+                    .relation("type_single", "attr_reference")
+                    .relation("type_map", "attr_reference"))
+                .attribute("attr_string", ValueType.STRING_LIST)
+                .attribute("attr_text", ValueType.TEXT_LIST))
+            .type(3, "type_map", t -> t
+                .attribute("attr_boolean", ValueType.BOOLEAN_MAP)
+                .attribute("attr_datetime", ValueType.DATETIME_MAP)
+                .attribute("attr_floating", ValueType.FLOATING_MAP)
+                .attribute("attr_integer", ValueType.INTEGER_MAP)
+                .attribute("attr_reference", ValueType.REFERENCE_MAP, a -> a
+                    .relation("type_list", "attr_reference"))
+                .attribute("attr_string", ValueType.STRING_MAP)
+                .attribute("attr_text", ValueType.TEXT_MAP))
             .build();
 
         Schema expected = new Schema.Builder()
-            .table("type_a", t -> t
+            .table("type_single", t -> t
                 .column("id", DataType.INTEGER)
                 .column("attr_boolean", DataType.BOOLEAN)
                 .column("attr_datetime", DataType.DATETIME)
                 .column("attr_floating", DataType.FLOATING)
                 .column("attr_integer", DataType.INTEGER)
+                .column("attr_reference", DataType.INTEGER)
                 .column("attr_string", DataType.VARCHAR)
-                .column("attr_text", DataType.TEXT))
+                .column("attr_text", DataType.TEXT)
+                .index("ixp_type_single", "id")
+                .index("ixr_type_single_attr_reference", "attr_reference"))
+
+            .table("type_list", t -> t
+                .column("id", DataType.INTEGER)
+                .index("ixp_type_list", "id"))
+            .table("type_list_attr_boolean", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.BOOLEAN)
+                .index("ixp_type_list_attr_boolean", "id"))
+            .table("type_list_attr_datetime", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.DATETIME)
+                .index("ixp_type_list_attr_datetime", "id"))
+            .table("type_list_attr_floating", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.FLOATING)
+                .index("ixp_type_list_attr_floating", "id"))
+            .table("type_list_attr_integer", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.INTEGER)
+                .index("ixp_type_list_attr_integer", "id"))
+            .table("type_list_attr_reference", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.INTEGER)
+                .index("ixp_type_list_attr_reference", "id")
+                .index("ixr_type_list_attr_reference", "value"))
+            .table("type_list_attr_string", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.VARCHAR)
+                .index("ixp_type_list_attr_string", "id"))
+            .table("type_list_attr_text", t -> t
+                .column("id", DataType.INTEGER)
+                .column("value", DataType.TEXT)
+                .index("ixp_type_list_attr_text", "id"))
+
+            .table("type_map", t -> t
+                .column("id", DataType.INTEGER)
+                .index("ixp_type_map", "id"))
+            .table("type_map_attr_boolean", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.BOOLEAN)
+                .index("ixp_type_map_attr_boolean", "id", "key"))
+            .table("type_map_attr_datetime", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.DATETIME)
+                .index("ixp_type_map_attr_datetime", "id", "key"))
+            .table("type_map_attr_floating", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.FLOATING)
+                .index("ixp_type_map_attr_floating", "id", "key"))
+            .table("type_map_attr_integer", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.INTEGER)
+                .index("ixp_type_map_attr_integer", "id", "key"))
+            .table("type_map_attr_reference", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.INTEGER)
+                .index("ixp_type_map_attr_reference", "id", "key")
+                .index("ixr_type_map_attr_reference", "value"))
+            .table("type_map_attr_string", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.VARCHAR)
+                .index("ixp_type_map_attr_string", "id", "key"))
+            .table("type_map_attr_text", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.TEXT)
+                .index("ixp_type_map_attr_text", "id", "key"))
             .build();
 
         // Execute
@@ -59,37 +155,4 @@ public class Generator_UnitTest {
         assertEquals(DataType.TEXT, subject.convert(Primitive.TEXT));
     }
 
-    @Test
-    public void toSnakeCase() {
-        // Setup
-        Generator subject = new Generator();
-
-        // Execute & Verify
-        assertEquals("hello_Case_World", subject.toSnakeCase("helloCaseWorld"));
-        assertEquals("hello_CASE_World", subject.toSnakeCase("helloCASEWorld"));
-        assertEquals("HELLO_Case_World", subject.toSnakeCase("HELLOCaseWorld"));
-        assertEquals("hello_case_world", subject.toSnakeCase("hello_case_world"));
-        assertEquals("hello", subject.toSnakeCase("hello"));
-        assertEquals("", subject.toSnakeCase(""));
-        assertNull(subject.toSnakeCase(null));
-    }
-
-    @Test
-    public void toLatinAlphaNumeric() {
-        // Setup
-        Generator subject = new Generator();
-
-        // Execute & Verify
-        assertEquals("CaseWorld", subject.toLatinAlphaNumeric("ПриветCaseWorld"));
-        assertEquals("hello_World", subject.toLatinAlphaNumeric("helloПрописнойWorld"));
-        assertEquals("HELLOCase", subject.toLatinAlphaNumeric("HELLOCaseМир"));
-        assertEquals("hello_23", subject.toLatinAlphaNumeric("hello_23"));
-        assertEquals("hello", subject.toLatinAlphaNumeric("123hello"));
-        assertEquals("hello", subject.toLatinAlphaNumeric("_hello"));
-        assertEquals("hello", subject.toLatinAlphaNumeric("hello_"));
-        assertEquals("hello_world", subject.toLatinAlphaNumeric("hello___world"));
-        assertEquals("", subject.toLatinAlphaNumeric("Привет"));
-        assertEquals("", subject.toLatinAlphaNumeric(""));
-        assertNull(subject.toLatinAlphaNumeric(null));
-    }
 }

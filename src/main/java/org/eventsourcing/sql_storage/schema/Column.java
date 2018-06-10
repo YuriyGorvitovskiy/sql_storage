@@ -35,12 +35,16 @@ public class Column {
         }
     }
 
-    public final Table    owner;
+    public static final String ID    = "id";
+    public static final String KEY   = "key";
+    public static final String VALUE = "value";
+
+    public final Table    table;
     public final String   name;
     public final DataType type;
 
-    Column(Table owner, String name, DataType type) {
-        this.owner = owner;
+    Column(Table table, String name, DataType type) {
+        this.table = table;
         this.name = name;
         this.type = type;
     }
@@ -65,7 +69,7 @@ public class Column {
 
     @Override
     public String toString() {
-        return "Column [owner=" + owner.name + ", name=" + name + ", type=" + type + "]";
+        return "Column [table=" + table.name + ", name=" + name + ", type=" + type + "]";
     }
 
 }

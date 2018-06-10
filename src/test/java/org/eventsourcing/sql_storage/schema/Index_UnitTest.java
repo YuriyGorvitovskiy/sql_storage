@@ -41,7 +41,7 @@ public class Index_UnitTest {
         Column column2 = table.getColumn(COLUMN_NAME_2);
         Index index = table.getIndex(INDEX_NAME_1);
 
-        assertEquals(table, index.owner);
+        assertEquals(table, index.table);
         assertEquals(INDEX_NAME_1, index.name);
         assertEquals(column1, index.columns.get(0));
         assertEquals(column2, index.columns.get(1));
