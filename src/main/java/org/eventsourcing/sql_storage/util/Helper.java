@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
@@ -94,6 +95,13 @@ public class Helper {
         } catch (Throwable ex) {
             return errorHandling.apply(ex);
         }
+    }
+
+    public static <T> T anyValue(Map<?, T> map) {
+        if (null == map || map.isEmpty())
+            return null;
+
+        return map.values().iterator().next();
     }
 
     public static String toSnakeCase(String str) {
