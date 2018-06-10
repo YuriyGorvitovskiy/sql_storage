@@ -130,6 +130,7 @@ public class Generator_UnitTest {
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.TEXT)
                 .index("ixp_type_map_attr_text", "id", "key"))
+
             .build();
 
         // Execute
