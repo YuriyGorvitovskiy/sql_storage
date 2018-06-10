@@ -1,7 +1,12 @@
 package org.eventsourcing.sql_storage.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.eventsourcing.sql_storage.model.AttributeId;
 import org.eventsourcing.sql_storage.model.Model;
 import org.eventsourcing.sql_storage.model.Primitive;
 import org.eventsourcing.sql_storage.model.ValueType;
@@ -20,8 +25,10 @@ public class Generator_UnitTest {
                 .attribute("attr_datetime", ValueType.DATETIME)
                 .attribute("attr_floating", ValueType.FLOATING)
                 .attribute("attr_integer", ValueType.INTEGER)
-                .attribute("attr_reference", ValueType.REFERENCE, a -> a
-                    .relation("type_list", "attr_reference"))
+                .attribute("ref_list", ValueType.REFERENCE, "type_list", "ref_single")
+                .attribute("ref_map", ValueType.REFERENCE, "type_map", "ref_single")
+                .attribute("ref_single", ValueType.REFERENCE, "type_single", "ref_single_back")
+                .attribute("ref_single_back", ValueType.REFERENCE, "type_single", "ref_single")
                 .attribute("attr_string", ValueType.STRING)
                 .attribute("attr_text", ValueType.TEXT))
             .type(2, "type_list", t -> t
@@ -29,9 +36,10 @@ public class Generator_UnitTest {
                 .attribute("attr_datetime", ValueType.DATETIME_LIST)
                 .attribute("attr_floating", ValueType.FLOATING_LIST)
                 .attribute("attr_integer", ValueType.INTEGER_LIST)
-                .attribute("attr_reference", ValueType.REFERENCE_LIST, a -> a
-                    .relation("type_single", "attr_reference")
-                    .relation("type_map", "attr_reference"))
+                .attribute("ref_list", ValueType.REFERENCE_LIST, "type_list", "ref_list_back")
+                .attribute("ref_list_back", ValueType.REFERENCE_LIST, "type_list", "ref_list")
+                .attribute("ref_map", ValueType.REFERENCE_LIST, "type_map", "ref_list")
+                .attribute("ref_single", ValueType.REFERENCE_LIST, "type_single", "ref_list")
                 .attribute("attr_string", ValueType.STRING_LIST)
                 .attribute("attr_text", ValueType.TEXT_LIST))
             .type(3, "type_map", t -> t
@@ -39,8 +47,10 @@ public class Generator_UnitTest {
                 .attribute("attr_datetime", ValueType.DATETIME_MAP)
                 .attribute("attr_floating", ValueType.FLOATING_MAP)
                 .attribute("attr_integer", ValueType.INTEGER_MAP)
-                .attribute("attr_reference", ValueType.REFERENCE_MAP, a -> a
-                    .relation("type_list", "attr_reference"))
+                .attribute("ref_list", ValueType.REFERENCE_MAP, "type_list", "ref_map")
+                .attribute("ref_map", ValueType.REFERENCE_MAP, "type_map", "ref_map_back")
+                .attribute("ref_map_back", ValueType.REFERENCE_MAP, "type_map", "ref_map")
+                .attribute("ref_single", ValueType.REFERENCE_MAP, "type_single", "ref_map")
                 .attribute("attr_string", ValueType.STRING_MAP)
                 .attribute("attr_text", ValueType.TEXT_MAP))
             .build();
@@ -52,11 +62,16 @@ public class Generator_UnitTest {
                 .column("attr_datetime", DataType.DATETIME)
                 .column("attr_floating", DataType.FLOATING)
                 .column("attr_integer", DataType.INTEGER)
-                .column("attr_reference", DataType.INTEGER)
+                .column("ref_list", DataType.INTEGER)
+                .column("ref_map", DataType.INTEGER)
+                .column("ref_map_key", DataType.VARCHAR)
+                .column("ref_single", DataType.INTEGER)
                 .column("attr_string", DataType.VARCHAR)
                 .column("attr_text", DataType.TEXT)
                 .index("ixp_type_single", "id")
-                .index("ixr_type_single_attr_reference", "attr_reference"))
+                .index("ixr_type_single_ref_list", "ref_list")
+                .index("ixr_type_single_ref_map", "ref_map", "ref_map_key")
+                .index("ixr_type_single_ref_single", "ref_single"))
 
             .table("type_list", t -> t
                 .column("id", DataType.INTEGER)
@@ -77,11 +92,11 @@ public class Generator_UnitTest {
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.INTEGER)
                 .index("ixp_type_list_attr_integer", "id"))
-            .table("type_list_attr_reference", t -> t
+            .table("type_list_ref_list", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_list_attr_reference", "id")
-                .index("ixr_type_list_attr_reference", "value"))
+                .index("ixp_type_list_ref_list", "id")
+                .index("ixr_type_list_ref_list", "value"))
             .table("type_list_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.VARCHAR)
@@ -114,12 +129,18 @@ public class Generator_UnitTest {
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
                 .index("ixp_type_map_attr_integer", "id", "key"))
-            .table("type_map_attr_reference", t -> t
+            .table("type_map_ref_list", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_map_attr_reference", "id", "key")
-                .index("ixr_type_map_attr_reference", "value"))
+                .index("ixp_type_map_ref_list", "id", "key")
+                .index("ixr_type_map_ref_list", "value"))
+            .table("type_map_ref_map", t -> t
+                .column("id", DataType.INTEGER)
+                .column("key", DataType.VARCHAR)
+                .column("value", DataType.INTEGER)
+                .index("ixp_type_map_ref_map", "id", "key")
+                .index("ixr_type_map_ref_map", "value"))
             .table("type_map_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
@@ -156,4 +177,24 @@ public class Generator_UnitTest {
         assertEquals(DataType.TEXT, subject.convert(Primitive.TEXT));
     }
 
+    @Test
+    public void getBest() {
+        // Setup
+        Model model = new Model.Builder()
+            .type(1, "type_single", t -> t
+                .attribute("attr_boolean", ValueType.BOOLEAN)
+                .attribute("attr_datetime", ValueType.DATETIME)
+                .attribute("attr_floating", ValueType.FLOATING))
+            .build();
+
+        final AttributeId id1 = new AttributeId(model.getAttribute("type_single", "attr_boolean"));
+        final AttributeId id2 = new AttributeId(model.getAttribute("type_single", "attr_datetime"));
+        final AttributeId id3 = new AttributeId(model.getAttribute("type_single", "attr_floating"));
+
+        final Collection<AttributeId> ids = Arrays.asList(id2, id1, id3);
+
+        // Execute & Verify
+        assertSame(id1, new Generator().getBest(ids));
+
+    }
 }
