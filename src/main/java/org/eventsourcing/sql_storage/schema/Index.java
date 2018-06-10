@@ -50,12 +50,12 @@ public class Index {
         }
     }
 
-    public final Table        owner;
+    public final Table        table;
     public final String       name;
     public final List<Column> columns;
 
-    Index(Table owner, String name, List<Column> columns) {
-        this.owner = owner;
+    Index(Table table, String name, List<Column> columns) {
+        this.table = table;
         this.name = name;
         this.columns = Collections.unmodifiableList(columns);
     }
@@ -80,6 +80,6 @@ public class Index {
 
     @Override
     public String toString() {
-        return "Index [owner=" + owner.name + ", name=" + name + "]";
+        return "Index [table=" + table.name + ", name=" + name + "]";
     }
 }

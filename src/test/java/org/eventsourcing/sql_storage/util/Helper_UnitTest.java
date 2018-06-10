@@ -263,4 +263,33 @@ public class Helper_UnitTest {
         // Verify
         assertSame(FAILURE, actual);
     }
+
+    @Test
+    public void toSnakeCase() {
+        // Execute & Verify
+        assertEquals("hello_Case_World", Helper.toSnakeCase("helloCaseWorld"));
+        assertEquals("hello_CASE_World", Helper.toSnakeCase("helloCASEWorld"));
+        assertEquals("HELLO_Case_World", Helper.toSnakeCase("HELLOCaseWorld"));
+        assertEquals("hello_case_world", Helper.toSnakeCase("hello_case_world"));
+        assertEquals("hello", Helper.toSnakeCase("hello"));
+        assertEquals("", Helper.toSnakeCase(""));
+        assertNull(Helper.toSnakeCase(null));
+    }
+
+    @Test
+    public void toLatinAlphaNumeric() {
+        // Execute & Verify
+        assertEquals("CaseWorld", Helper.toLatinAlphaNumeric("ПриветCaseWorld"));
+        assertEquals("hello_World", Helper.toLatinAlphaNumeric("helloПрописнойWorld"));
+        assertEquals("HELLOCase", Helper.toLatinAlphaNumeric("HELLOCaseМир"));
+        assertEquals("hello_23", Helper.toLatinAlphaNumeric("hello_23"));
+        assertEquals("hello", Helper.toLatinAlphaNumeric("123hello"));
+        assertEquals("hello", Helper.toLatinAlphaNumeric("_hello"));
+        assertEquals("hello", Helper.toLatinAlphaNumeric("hello_"));
+        assertEquals("hello_world", Helper.toLatinAlphaNumeric("hello___world"));
+        assertEquals("", Helper.toLatinAlphaNumeric("Привет"));
+        assertEquals("", Helper.toLatinAlphaNumeric(""));
+        assertNull(Helper.toLatinAlphaNumeric(null));
+    }
+
 }

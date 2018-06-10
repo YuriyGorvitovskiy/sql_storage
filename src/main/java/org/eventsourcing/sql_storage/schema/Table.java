@@ -14,8 +14,8 @@ public class Table {
 
     public static class Builder {
         String                         name;
-        List<Consumer<Column.Builder>> columnDefiners = new ArrayList<>();
-        List<Consumer<Index.Builder>>  indexDefiners  = new ArrayList<>();
+        List<Consumer<Column.Builder>> columnBuilders = new ArrayList<>();
+        List<Consumer<Index.Builder>>  indexBuilders  = new ArrayList<>();
 
         Builder() {
         }
@@ -26,12 +26,12 @@ public class Table {
         }
 
         public Builder column(Consumer<Column.Builder> columnDefiner) {
-            this.columnDefiners.add(columnDefiner);
+            this.columnBuilders.add(columnDefiner);
             return this;
         }
 
         public Builder index(Consumer<Index.Builder> indexDefiner) {
-            this.indexDefiners.add(indexDefiner);
+            this.indexBuilders.add(indexDefiner);
             return this;
         }
 
@@ -41,8 +41,8 @@ public class Table {
                 .type(type));
         }
 
-        public Builder index(String name, Consumer<Index.Builder> indexDefiner) {
-            return index((i) -> indexDefiner.accept(i.name(name)));
+        public Builder index(String name, Consumer<Index.Builder> indexBuilders) {
+            return index((i) -> indexBuilders.accept(i.name(name)));
         }
 
         public Builder index(String name, String... columnNames) {
@@ -57,14 +57,14 @@ public class Table {
             if (Helper.isEmpty(name))
                 throw new RuntimeException("Table has no name specified");
 
-            if (columnDefiners.isEmpty())
+            if (columnBuilders.isEmpty())
                 throw new RuntimeException("Table " + name + " has no columns specified");
 
             Map<String, Column> columnMap = new HashMap<>();
             Map<String, Index> indexMap = new HashMap<>();
             Table table = new Table(name, columnMap, indexMap);
 
-            for (Consumer<Column.Builder> columnDefiner : columnDefiners) {
+            for (Consumer<Column.Builder> columnDefiner : columnBuilders) {
                 Column.Builder builder = new Column.Builder();
                 columnDefiner.accept(builder);
 
@@ -75,7 +75,7 @@ public class Table {
                         "Table has duplicate column names: " + duplicate + " & " + column);
             }
 
-            for (Consumer<Index.Builder> indexDefiner : indexDefiners) {
+            for (Consumer<Index.Builder> indexDefiner : indexBuilders) {
                 Index.Builder builder = new Index.Builder();
                 indexDefiner.accept(builder);
 
