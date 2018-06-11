@@ -53,6 +53,15 @@ public class Table {
             });
         }
 
+        public Builder primaryKey(String name, String... columnNames) {
+            return index(name, (i) -> {
+                i.primary();
+                for (String columnName : columnNames) {
+                    i.column(columnName);
+                }
+            });
+        }
+
         public Table build() {
             if (Helper.isEmpty(name))
                 throw new RuntimeException("Table has no name specified");
@@ -88,6 +97,7 @@ public class Table {
 
             return table;
         }
+
     }
 
     public final String              name;

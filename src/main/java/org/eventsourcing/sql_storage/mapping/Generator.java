@@ -23,9 +23,10 @@ import org.eventsourcing.sql_storage.util.Helper;
 
 public class Generator {
 
-    public static final String NAME_SEPARATOR         = "_";
-    public static final String INDEX_PRIMARY_PREFIX   = "ixp_";
-    public static final String INDEX_REFERENCE_PREFIX = "ixr_";
+    public static final String NAME_SEPARATOR       = "_";
+    public static final String PRIMARY_KEY_PREFIX   = "pk_";
+    public static final String PRIMARY_INDEX_PREFIX = "px_";
+    public static final String INDEX_VALUE_PREFIX   = "ix_";
 
     public Schema generate(Model model) {
         Set<AttributeId> primaryRelations = collectPrimaryRelations(model);
@@ -39,7 +40,7 @@ public class Generator {
     public void generateTable(Schema.Builder schema, EntityType type, Set<AttributeId> primaryRelations) {
         String name = type.name;
         schema.table(type.name, table -> {
-            table.index(INDEX_PRIMARY_PREFIX + name, Column.ID);
+            table.primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID);
             for (Attribute attribute : type.attributes.values()) {
                 generateSingleColumn(table, primaryRelations, attribute, name);
                 generateSingleReference(table, primaryRelations, attribute, name);
@@ -84,7 +85,7 @@ public class Generator {
         Relation relation = Helper.anyValue(attribute.relations);
         if (null != relation && Container.MAP == relation.reverse.type.container) {
             String key = name + NAME_SEPARATOR + Column.KEY;
-            String index = INDEX_REFERENCE_PREFIX + entityName + NAME_SEPARATOR + attribute.name;
+            String index = INDEX_VALUE_PREFIX + entityName + NAME_SEPARATOR + attribute.name;
             table
                 .column(key, convert(Primitive.STRING))
                 .index(index, name, key);
@@ -103,7 +104,7 @@ public class Generator {
         schema.table(name, table -> {
             table.column(Column.ID, convert(Primitive.REFERENCE))
                 .column(Column.VALUE, convert(attribute.type.primitive))
-                .index(INDEX_PRIMARY_PREFIX + name, Column.ID);
+                .index(PRIMARY_INDEX_PREFIX + name, Column.ID);
             generateAttributeIndex(table, attribute, entityName, Column.VALUE);
         });
     }
@@ -119,7 +120,7 @@ public class Generator {
             table.column(Column.ID, convert(Primitive.REFERENCE))
                 .column(Column.KEY, convert(Primitive.STRING))
                 .column(Column.VALUE, convert(attribute.type.primitive))
-                .index(INDEX_PRIMARY_PREFIX + name, Column.ID, Column.KEY);
+                .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY);
             generateAttributeIndex(table, attribute, entityName, Column.VALUE);
         });
     }
@@ -130,7 +131,7 @@ public class Generator {
         if (Attribute.ID.equals(attribute.name))
             return;
 
-        String name = INDEX_REFERENCE_PREFIX + entityName + NAME_SEPARATOR + attribute.name;
+        String name = INDEX_VALUE_PREFIX + entityName + NAME_SEPARATOR + attribute.name;
         table.index(name, columnName);
     }
 

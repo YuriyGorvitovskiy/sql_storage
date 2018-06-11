@@ -68,89 +68,89 @@ public class Generator_UnitTest {
                 .column("ref_single", DataType.INTEGER)
                 .column("attr_string", DataType.VARCHAR)
                 .column("attr_text", DataType.TEXT)
-                .index("ixp_type_single", "id")
-                .index("ixr_type_single_ref_list", "ref_list")
-                .index("ixr_type_single_ref_map", "ref_map", "ref_map_key")
-                .index("ixr_type_single_ref_single", "ref_single"))
+                .primaryKey("pk_type_single", "id")
+                .index("ix_type_single_ref_list", "ref_list")
+                .index("ix_type_single_ref_map", "ref_map", "ref_map_key")
+                .index("ix_type_single_ref_single", "ref_single"))
 
             .table("type_list", t -> t
                 .column("id", DataType.INTEGER)
-                .index("ixp_type_list", "id"))
+                .primaryKey("pk_type_list", "id"))
             .table("type_list_attr_boolean", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.BOOLEAN)
-                .index("ixp_type_list_attr_boolean", "id"))
+                .index("px_type_list_attr_boolean", "id"))
             .table("type_list_attr_datetime", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.DATETIME)
-                .index("ixp_type_list_attr_datetime", "id"))
+                .index("px_type_list_attr_datetime", "id"))
             .table("type_list_attr_floating", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.FLOATING)
-                .index("ixp_type_list_attr_floating", "id"))
+                .index("px_type_list_attr_floating", "id"))
             .table("type_list_attr_integer", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_list_attr_integer", "id"))
+                .index("px_type_list_attr_integer", "id"))
             .table("type_list_ref_list", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_list_ref_list", "id")
-                .index("ixr_type_list_ref_list", "value"))
+                .index("px_type_list_ref_list", "id")
+                .index("ix_type_list_ref_list", "value"))
             .table("type_list_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.VARCHAR)
-                .index("ixp_type_list_attr_string", "id"))
+                .index("px_type_list_attr_string", "id"))
             .table("type_list_attr_text", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.TEXT)
-                .index("ixp_type_list_attr_text", "id"))
+                .index("px_type_list_attr_text", "id"))
 
             .table("type_map", t -> t
                 .column("id", DataType.INTEGER)
-                .index("ixp_type_map", "id"))
+                .primaryKey("pk_type_map", "id"))
             .table("type_map_attr_boolean", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.BOOLEAN)
-                .index("ixp_type_map_attr_boolean", "id", "key"))
+                .primaryKey("pk_type_map_attr_boolean", "id", "key"))
             .table("type_map_attr_datetime", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.DATETIME)
-                .index("ixp_type_map_attr_datetime", "id", "key"))
+                .primaryKey("pk_type_map_attr_datetime", "id", "key"))
             .table("type_map_attr_floating", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.FLOATING)
-                .index("ixp_type_map_attr_floating", "id", "key"))
+                .primaryKey("pk_type_map_attr_floating", "id", "key"))
             .table("type_map_attr_integer", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_map_attr_integer", "id", "key"))
+                .primaryKey("pk_type_map_attr_integer", "id", "key"))
             .table("type_map_ref_list", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_map_ref_list", "id", "key")
-                .index("ixr_type_map_ref_list", "value"))
+                .primaryKey("pk_type_map_ref_list", "id", "key")
+                .index("ix_type_map_ref_list", "value"))
             .table("type_map_ref_map", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
-                .index("ixp_type_map_ref_map", "id", "key")
-                .index("ixr_type_map_ref_map", "value"))
+                .primaryKey("pk_type_map_ref_map", "id", "key")
+                .index("ix_type_map_ref_map", "value"))
             .table("type_map_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.VARCHAR)
-                .index("ixp_type_map_attr_string", "id", "key"))
+                .primaryKey("pk_type_map_attr_string", "id", "key"))
             .table("type_map_attr_text", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.TEXT)
-                .index("ixp_type_map_attr_text", "id", "key"))
+                .primaryKey("pk_type_map_attr_text", "id", "key"))
 
             .build();
 
