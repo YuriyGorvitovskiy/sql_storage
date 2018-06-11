@@ -2,7 +2,7 @@ package org.eventsourcing.sql_storage.model;
 
 import java.util.Objects;
 
-public class AttributeId implements Comparable<AttributeId> {
+public class AttributeId {
 
     final String className;
     final String attributeName;
@@ -28,15 +28,6 @@ public class AttributeId implements Comparable<AttributeId> {
         AttributeId other = (AttributeId) obj;
         return Objects.equals(this.className, other.className)
                 && Objects.equals(this.attributeName, other.attributeName);
-    }
-
-    @Override
-    public int compareTo(AttributeId o) {
-        int cmp = className.compareTo(o.className);
-        if (0 == cmp)
-            cmp = attributeName.compareTo(o.attributeName);
-
-        return cmp;
     }
 
     @Override

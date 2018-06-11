@@ -1,14 +1,13 @@
 package org.eventsourcing.sql_storage.mapping;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.eventsourcing.sql_storage.model.AttributeId;
+import org.eventsourcing.sql_storage.model.Attribute;
 import org.eventsourcing.sql_storage.model.Model;
 import org.eventsourcing.sql_storage.model.Primitive;
+import org.eventsourcing.sql_storage.model.Relation;
 import org.eventsourcing.sql_storage.model.ValueType;
 import org.eventsourcing.sql_storage.schema.DataType;
 import org.eventsourcing.sql_storage.schema.Schema;
@@ -62,16 +61,16 @@ public class Generator_UnitTest {
                 .column("attr_datetime", DataType.DATETIME)
                 .column("attr_floating", DataType.FLOATING)
                 .column("attr_integer", DataType.INTEGER)
-                .column("ref_list", DataType.INTEGER)
-                .column("ref_map", DataType.INTEGER)
-                .column("ref_map_key", DataType.VARCHAR)
-                .column("ref_single", DataType.INTEGER)
+                .column("ref_list_2", DataType.INTEGER)
+                .column("ref_map_3", DataType.INTEGER)
+                .column("ref_map_3_key", DataType.VARCHAR)
+                .column("ref_single_1", DataType.INTEGER)
                 .column("attr_string", DataType.VARCHAR)
                 .column("attr_text", DataType.TEXT)
                 .primaryKey("pk_type_single", "id")
-                .index("ix_type_single_ref_list", "ref_list")
-                .index("ix_type_single_ref_map", "ref_map", "ref_map_key")
-                .index("ix_type_single_ref_single", "ref_single"))
+                .index("ix_type_single_ref_list_2", "ref_list_2")
+                .index("ix_type_single_ref_map_3", "ref_map_3", "ref_map_3_key")
+                .index("ix_type_single_ref_single_1", "ref_single_1"))
 
             .table("type_list", t -> t
                 .column("id", DataType.INTEGER)
@@ -92,11 +91,11 @@ public class Generator_UnitTest {
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.INTEGER)
                 .index("px_type_list_attr_integer", "id"))
-            .table("type_list_ref_list", t -> t
+            .table("type_list_ref_list_2", t -> t
                 .column("id", DataType.INTEGER)
-                .column("value", DataType.INTEGER)
-                .index("px_type_list_ref_list", "id")
-                .index("ix_type_list_ref_list", "value"))
+                .column("type_list_id", DataType.INTEGER)
+                .index("px_type_list_ref_list_2", "id")
+                .index("ix_type_list_ref_list_2", "type_list_id"))
             .table("type_list_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("value", DataType.VARCHAR)
@@ -129,18 +128,18 @@ public class Generator_UnitTest {
                 .column("key", DataType.VARCHAR)
                 .column("value", DataType.INTEGER)
                 .primaryKey("pk_type_map_attr_integer", "id", "key"))
-            .table("type_map_ref_list", t -> t
+            .table("type_map_ref_list_2", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
-                .column("value", DataType.INTEGER)
-                .primaryKey("pk_type_map_ref_list", "id", "key")
-                .index("ix_type_map_ref_list", "value"))
-            .table("type_map_ref_map", t -> t
+                .column("type_list_id", DataType.INTEGER)
+                .primaryKey("pk_type_map_ref_list_2", "id", "key")
+                .index("ix_type_map_ref_list_2", "type_list_id"))
+            .table("type_map_ref_map_3", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
-                .column("value", DataType.INTEGER)
-                .primaryKey("pk_type_map_ref_map", "id", "key")
-                .index("ix_type_map_ref_map", "value"))
+                .column("type_map_id", DataType.INTEGER)
+                .primaryKey("pk_type_map_ref_map_3", "id", "key")
+                .index("ix_type_map_ref_map_3", "type_map_id"))
             .table("type_map_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
@@ -178,23 +177,34 @@ public class Generator_UnitTest {
     }
 
     @Test
-    public void getBest() {
+    public void isBest() {
         // Setup
         Model model = new Model.Builder()
-            .type(1, "type_single", t -> t
-                .attribute("attr_boolean", ValueType.BOOLEAN)
-                .attribute("attr_datetime", ValueType.DATETIME)
-                .attribute("attr_floating", ValueType.FLOATING))
+            .type(1, "type1", t -> t
+                .attribute("rel_1", ValueType.REFERENCE, "type1", "rel_2")
+                .attribute("rel_2", ValueType.REFERENCE, "type1", "rel_1")
+                .attribute("rel_3", ValueType.REFERENCE, "type2", "rel_4"))
+            .type(2, "type2", t -> t
+                .attribute("rel_4", ValueType.REFERENCE, "type1", "rel_3"))
             .build();
 
-        final AttributeId id1 = new AttributeId(model.getAttribute("type_single", "attr_boolean"));
-        final AttributeId id2 = new AttributeId(model.getAttribute("type_single", "attr_datetime"));
-        final AttributeId id3 = new AttributeId(model.getAttribute("type_single", "attr_floating"));
+        final Attribute attr1 = model.getAttribute("type1", "rel_1");
+        final Attribute attr2 = model.getAttribute("type1", "rel_2");
+        final Attribute attr3 = model.getAttribute("type1", "rel_3");
+        final Attribute attr4 = model.getAttribute("type2", "rel_4");
 
-        final Collection<AttributeId> ids = Arrays.asList(id2, id1, id3);
+        final Relation rel1 = attr1.getRelation("type1");
+        final Relation rel2 = attr2.getRelation("type1");
+        final Relation rel3 = attr3.getRelation("type2");
+        final Relation rel4 = attr4.getRelation("type1");
+
+        final Generator subject = new Generator();
 
         // Execute & Verify
-        assertSame(id1, new Generator().getBest(ids));
+        assertTrue(subject.isBest(attr1, rel1));
+        assertTrue(subject.isBest(attr3, rel3));
 
+        assertFalse(subject.isBest(attr2, rel2));
+        assertFalse(subject.isBest(attr4, rel4));
     }
 }
