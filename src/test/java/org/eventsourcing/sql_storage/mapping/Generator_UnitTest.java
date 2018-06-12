@@ -138,8 +138,9 @@ public class Generator_UnitTest {
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
                 .column("type_map_id", DataType.INTEGER)
+                .column("type_map_key", DataType.VARCHAR)
                 .primaryKey("pk_type_map_ref_map_3", "id", "key")
-                .index("ix_type_map_ref_map_3", "type_map_id"))
+                .index("ix_type_map_ref_map_3", "type_map_id", "type_map_key"))
             .table("type_map_attr_string", t -> t
                 .column("id", DataType.INTEGER)
                 .column("key", DataType.VARCHAR)
