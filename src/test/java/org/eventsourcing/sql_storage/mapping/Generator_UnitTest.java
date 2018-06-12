@@ -1,6 +1,6 @@
 package org.eventsourcing.sql_storage.mapping;
 
-import static org.eventsourcing.sql_storage.schema.SchemaAssert.assertSchemaEquals;
+import static org.eventsourcing.sql_storage.test.SchemaAssert.assertSchemaEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
