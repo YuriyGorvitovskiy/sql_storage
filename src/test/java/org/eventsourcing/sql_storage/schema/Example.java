@@ -25,19 +25,19 @@ public class Example {
             .column(COLUMN_NAME_1, BOOLEAN)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, FLOATING)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_2, t -> t
             .column(COLUMN_NAME_1, DATETIME)
             .column(COLUMN_NAME_2, VARCHAR)
             .column(COLUMN_NAME_3, TEXT)
-            .index(INDEX_NAME_2, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_2, COLUMN_NAME_1)
             .index(INDEX_NAME_3, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_3, t -> t
             .column(COLUMN_NAME_1, BOOLEAN)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, FLOATING)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_2, COLUMN_NAME_3))
         .build();
 
@@ -46,19 +46,19 @@ public class Example {
             .column(COLUMN_NAME_1, TEXT)
             .column(COLUMN_NAME_2, VARCHAR)
             .column(COLUMN_NAME_3, DATETIME)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_2, t -> t
             .column(COLUMN_NAME_1, FLOATING)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, BOOLEAN)
-            .index(INDEX_NAME_2, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_2, COLUMN_NAME_1)
             .index(INDEX_NAME_3, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_3, t -> t
             .column(COLUMN_NAME_1, BOOLEAN)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, FLOATING)
-            .index(INDEX_NAME_1, COLUMN_NAME_3)
+            .index(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_1, COLUMN_NAME_2))
         .build();
 
@@ -67,19 +67,19 @@ public class Example {
             .column(COLUMN_NAME_1, BOOLEAN)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, FLOATING)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_2, t -> t
             .column(COLUMN_NAME_1, DATETIME)
             .column(COLUMN_NAME_2, VARCHAR)
             .column(COLUMN_NAME_3, TEXT)
-            .index(INDEX_NAME_2, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_2, COLUMN_NAME_1)
             .index(INDEX_NAME_3, COLUMN_NAME_2, COLUMN_NAME_3))
         .table(TABLE_NAME_3, t -> t
             .column(COLUMN_NAME_1, BOOLEAN)
             .column(COLUMN_NAME_2, INTEGER)
             .column(COLUMN_NAME_3, FLOATING)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
+            .primaryKey(INDEX_NAME_1, COLUMN_NAME_1)
             .index(INDEX_NAME_2, COLUMN_NAME_2, COLUMN_NAME_3))
         .build();
 
@@ -115,4 +115,6 @@ public class Example {
 
     public static final Index INDEX_3_1 = TABLE_1_3.getIndex(INDEX_NAME_1);
     public static final Index INDEX_3_2 = TABLE_1_3.getIndex(INDEX_NAME_2);
+
+    public static final Index INDEX_2_3_1 = TABLE_2_3.getIndex(INDEX_NAME_1);
 }

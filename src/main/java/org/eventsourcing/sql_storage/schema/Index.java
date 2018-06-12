@@ -14,6 +14,7 @@ public class Index {
     public static class Builder {
         String      name;
         Set<String> columnNames = new LinkedHashSet<>();
+        boolean     primary     = false;
 
         Builder() {
         }
@@ -28,6 +29,11 @@ public class Index {
             if (!this.columnNames.add(columnName)) {
                 throw new RuntimeException("Index has duplicate column " + columnName + " specified.");
             }
+            return this;
+        }
+
+        public Builder primary() {
+            this.primary = true;
             return this;
         }
 
@@ -46,23 +52,25 @@ public class Index {
 
                 columnsList.add(column);
             }
-            return new Index(owner, name, columnsList);
+            return new Index(owner, name, columnsList, primary);
         }
     }
 
     public final Table        table;
     public final String       name;
     public final List<Column> columns;
+    public final boolean      primary;
 
-    Index(Table table, String name, List<Column> columns) {
+    Index(Table table, String name, List<Column> columns, boolean primary) {
         this.table = table;
         this.name = name;
         this.columns = Collections.unmodifiableList(columns);
+        this.primary = primary;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, columns);
+        return Objects.hash(name, columns, primary);
     }
 
     @Override
@@ -75,7 +83,8 @@ public class Index {
 
         Index other = (Index) obj;
         return Objects.equals(this.name, other.name)
-                && Objects.equals(this.columns, other.columns);
+                && Objects.equals(this.columns, other.columns)
+                && this.primary == other.primary;
     }
 
     @Override
