@@ -1,5 +1,6 @@
 package org.eventsourcing.sql_storage.mapping;
 
+import static org.eventsourcing.sql_storage.schema.SchemaAssert.assertSchemaEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -199,7 +200,7 @@ public class Generator_UnitTest {
         Schema actual = new Generator().generate(model);
 
         // Validate
-        assertEquals(expected, actual);
+        assertSchemaEquals(expected, actual);
     }
 
     @Test
