@@ -90,7 +90,9 @@ public class Generator {
         if (Container.SINGLE == relation.reverse.type.container && !isBest(attribute, relation))
             return;
 
-        String name = attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
+        String name = attribute.relations.size() == 1
+                ? attribute.name
+                : attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
 
         if (Container.MAP == relation.reverse.type.container) {
             String key = name + NAME_SEPARATOR + Column.KEY;
@@ -113,7 +115,9 @@ public class Generator {
         if (!isBest(attribute, relation))
             return;
 
-        String name = entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
+        String name = attribute.relations.size() == 1
+                ? entityName + NAME_SEPARATOR + attribute.name
+                : entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
         String column = relation.reverse.owner.name + NAME_SEPARATOR + Column.ID;
         schema.table(name, t -> t
             .column(Column.ID, convert(Primitive.REFERENCE))
@@ -126,7 +130,9 @@ public class Generator {
         if (Container.SINGLE == relation.reverse.type.container)
             return;
 
-        String name = entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
+        String name = attribute.relations.size() == 1
+                ? entityName + NAME_SEPARATOR + attribute.name
+                : entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
         String columnId = relation.reverse.owner.name + NAME_SEPARATOR + Column.ID;
         if (Container.MAP == relation.reverse.type.container) {
             if (!isBest(attribute, relation))
