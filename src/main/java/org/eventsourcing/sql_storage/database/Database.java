@@ -3,15 +3,25 @@ package org.eventsourcing.sql_storage.database;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import org.eventsourcing.sql_storage.util.Helper;
 
-public class Database {
+public abstract class Database {
 
-    final int         maxidentifierLength;
-    final Set<String> reservedKeywords;
+    public final int maxIdentifierLength;
 
-    protected Database(int maxidentifierLength, String reservedWordsResource) {
-        this.maxidentifierLength = maxidentifierLength;
+    public final Set<String> reservedKeywords;
+
+    public final SQLGenerator sqlGenerator;
+
+    public final BasicDataSource datasource;
+
+    protected Database(SQLGenerator sqlGenerator, int maxidentifierLength, String reservedWordsResource) {
+        this.datasource = new BasicDataSource();
+        this.sqlGenerator = sqlGenerator;
+
+        this.maxIdentifierLength = maxidentifierLength;
         this.reservedKeywords = Collections.unmodifiableSet(
             Helper.resourceAsDictionary(getClass(), reservedWordsResource));
     }

@@ -19,8 +19,11 @@ repositories {
 }
 
 dependencies {
+    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.5.0'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.4'
+
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
 jacoco {
