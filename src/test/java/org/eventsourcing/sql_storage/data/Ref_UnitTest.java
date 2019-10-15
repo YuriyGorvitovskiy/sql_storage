@@ -1,17 +1,14 @@
 package org.eventsourcing.sql_storage.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class Ref_UnitTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void constructor_from_toString() {
@@ -40,27 +37,27 @@ public class Ref_UnitTest {
 
     @Test
     public void from_exception() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("Wrong Reference format");
-
         // Execute
-        Ref.from(":123");
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> Ref.from(":123"));
+
+        // Verify
+        assertEquals("Wrong Reference format", thrown.getMessage());
     }
 
     @Test
     public void equals_hash() {
         // Setup
-        long TYPE_ID1 = 0x1234567890ABCDEFL;
-        long TYPE_ID2 = 0x90ABCDEFL;
-        long ITEM_ID1 = 0xFEDCBA0987654321L;
-        long ITEM_ID2 = 0xFEDCBA09L;
+        long TYPE_ID1  = 0x1234567890ABCDEFL;
+        long TYPE_ID2  = 0x90ABCDEFL;
+        long ITEM_ID1  = 0xFEDCBA0987654321L;
+        long ITEM_ID2  = 0xFEDCBA09L;
 
-        Ref REF1 = new Ref(TYPE_ID1, ITEM_ID1);
-        Ref REF2 = new Ref(TYPE_ID1, ITEM_ID2);
-        Ref REF3 = new Ref(TYPE_ID2, ITEM_ID1);
-        Ref REF4 = new Ref(TYPE_ID2, ITEM_ID2);
-        Ref REF1_COPY = new Ref(TYPE_ID1, ITEM_ID1);
+        Ref  REF1      = new Ref(TYPE_ID1, ITEM_ID1);
+        Ref  REF2      = new Ref(TYPE_ID1, ITEM_ID2);
+        Ref  REF3      = new Ref(TYPE_ID2, ITEM_ID1);
+        Ref  REF4      = new Ref(TYPE_ID2, ITEM_ID2);
+        Ref  REF1_COPY = new Ref(TYPE_ID1, ITEM_ID1);
 
         // Execute & Verify
         Asserts.assertEquality(REF1, REF1_COPY);

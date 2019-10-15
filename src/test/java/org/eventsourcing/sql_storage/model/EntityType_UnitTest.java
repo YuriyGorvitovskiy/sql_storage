@@ -4,59 +4,69 @@ import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
 import static org.eventsourcing.sql_storage.model.ValueType.REFERENCE;
 import static org.eventsourcing.sql_storage.model.ValueType.STRING;
 import static org.eventsourcing.sql_storage.model.ValueType.STRING_LIST;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.junit.jupiter.api.Test;
+
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class EntityType_UnitTest {
 
-    static final long TYPE_ID  = 1;
-    static final long TYPE_ID1 = 2;
-    static final long TYPE_ID2 = 3;
+    static final long   TYPE_ID      = 1;
+    static final long   TYPE_ID1     = 2;
+    static final long   TYPE_ID2     = 3;
 
     static final String ENTITY_NAME  = "Entity";
     static final String ENTITY_NAME1 = "Hello";
     static final String ENTITY_NAME2 = "World";
 
-    static final String ATTR_NAME1 = "first";
-    static final String ATTR_NAME2 = "second";
+    static final String ATTR_NAME1   = "first";
+    static final String ATTR_NAME2   = "second";
 
-    final Model MODEL1 = new Model.Builder()
-        .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME2, STRING))
-        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME2, STRING))
+    final Model         MODEL1       = new Model.Builder()
+        .type(TYPE_ID1,
+                ENTITY_NAME1,
+                (t) -> t
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME2, STRING))
+        .type(TYPE_ID2,
+                ENTITY_NAME2,
+                (t) -> t
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME2, STRING))
         .build();
 
-    final Model MODEL2 = new Model.Builder()
-        .type(TYPE_ID2, ENTITY_NAME1, (t) -> t
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME2, STRING))
-        .type(TYPE_ID1, ENTITY_NAME2, (t) -> t
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME2, STRING))
+    final Model         MODEL2       = new Model.Builder()
+        .type(TYPE_ID2,
+                ENTITY_NAME1,
+                (t) -> t
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME2, STRING))
+        .type(TYPE_ID1,
+                ENTITY_NAME2,
+                (t) -> t
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME2, STRING))
         .build();
 
-    final Model MODEL3 = new Model.Builder()
-        .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME2, STRING))
-        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
-            .attribute(ATTR_NAME1, STRING)
-            .attribute(ATTR_NAME2, INTEGER))
+    final Model         MODEL3       = new Model.Builder()
+        .type(TYPE_ID1,
+                ENTITY_NAME1,
+                (t) -> t
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME2, STRING))
+        .type(TYPE_ID2,
+                ENTITY_NAME2,
+                (t) -> t
+                    .attribute(ATTR_NAME1, STRING)
+                    .attribute(ATTR_NAME2, INTEGER))
         .build();
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void builder_direct() {
@@ -94,17 +104,17 @@ public class EntityType_UnitTest {
         // Setup
         final List<Consumer<Model>> resolvers = new ArrayList<>();
 
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("has duplicate Attribute names");
-
         // Execute
-        new EntityType.Builder()
-            .typeId(TYPE_ID)
-            .name(ENTITY_NAME)
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME1, STRING_LIST)
-            .build(MODEL1, resolvers);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new EntityType.Builder()
+                    .typeId(TYPE_ID)
+                    .name(ENTITY_NAME)
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME1, STRING_LIST)
+                    .build(MODEL1, resolvers));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("has duplicate Attribute names"));
     }
 
     @Test
@@ -112,16 +122,16 @@ public class EntityType_UnitTest {
         // Setup
         final List<Consumer<Model>> resolvers = new ArrayList<>();
 
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no id specified");
-
         // Execute
-        new EntityType.Builder()
-            .name(ENTITY_NAME)
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME1, STRING_LIST)
-            .build(MODEL1, resolvers);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new EntityType.Builder()
+                    .name(ENTITY_NAME)
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME1, STRING_LIST)
+                    .build(MODEL1, resolvers));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no id specified"));
     }
 
     @Test
@@ -129,32 +139,36 @@ public class EntityType_UnitTest {
         // Setup
         final List<Consumer<Model>> resolvers = new ArrayList<>();
 
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no name specified");
-
         // Execute
-        new EntityType.Builder()
-            .typeId(TYPE_ID)
-            .attribute(ATTR_NAME1, INTEGER)
-            .attribute(ATTR_NAME1, STRING_LIST)
-            .build(MODEL1, resolvers);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new EntityType.Builder()
+                    .typeId(TYPE_ID)
+                    .attribute(ATTR_NAME1, INTEGER)
+                    .attribute(ATTR_NAME1, STRING_LIST)
+                    .build(MODEL1, resolvers));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no name specified"));
     }
 
     @Test
     public void equals_and_hash() {
         // Setup
-        final EntityType ENTITY_I1_N1_A1 = MODEL1.getEntityType(ENTITY_NAME1);
-        final EntityType ENTITY_I2_N2_A1 = MODEL1.getEntityType(ENTITY_NAME2);
-        final EntityType ENTITY_I2_N1_A1 = MODEL2.getEntityType(ENTITY_NAME1);
-        final EntityType ENTITY_I1_N2_A1 = MODEL2.getEntityType(ENTITY_NAME2);
-        final EntityType ENTITY_I2_N2_A2 = MODEL3.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I1_N1_A1      = MODEL1.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_I2_N2_A1      = MODEL1.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I2_N1_A1      = MODEL2.getEntityType(ENTITY_NAME1);
+        final EntityType ENTITY_I1_N2_A1      = MODEL2.getEntityType(ENTITY_NAME2);
+        final EntityType ENTITY_I2_N2_A2      = MODEL3.getEntityType(ENTITY_NAME2);
         final EntityType ENTITY_I1_N1_A1_COPY = MODEL3.getEntityType(ENTITY_NAME1);
 
         // Execute & Verify
         Asserts.assertEquality(ENTITY_I1_N1_A1, ENTITY_I1_N1_A1_COPY);
 
-        Asserts.assertInequality(null, ENTITY_I1_N1_A1, ENTITY_I2_N2_A1, ENTITY_I2_N1_A1, ENTITY_I1_N2_A1,
-            ENTITY_I2_N2_A2);
+        Asserts.assertInequality(null,
+                ENTITY_I1_N1_A1,
+                ENTITY_I2_N2_A1,
+                ENTITY_I2_N1_A1,
+                ENTITY_I1_N2_A1,
+                ENTITY_I2_N2_A2);
     }
 }

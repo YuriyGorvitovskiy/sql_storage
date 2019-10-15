@@ -4,7 +4,7 @@ import static org.eventsourcing.sql_storage.test.Asserts.assertMapEquals;
 import static org.eventsourcing.sql_storage.test.Asserts.context;
 import static org.eventsourcing.sql_storage.test.Asserts.failMessage;
 import static org.eventsourcing.sql_storage.test.SchemaAssert.assertColumnEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eventsourcing.sql_storage.mapping.MappingAttribute;
 import org.eventsourcing.sql_storage.mapping.MappingEntity;
@@ -40,9 +40,9 @@ public class MappingAssert {
             failMessage(context(context, TYPE), expect, actual);
 
         assertMapEquals(context(context, TYPE, "entities"),
-            expect.entities,
-            actual.entities,
-            MappingAssert::assertMappingEntityEquals);
+                expect.entities,
+                actual.entities,
+                MappingAssert::assertMappingEntityEquals);
     }
 
     public static void assertMappingEntityEquals(String context, MappingEntity expect, MappingEntity actual) {
@@ -54,9 +54,9 @@ public class MappingAssert {
             failMessage(context(context, TYPE), expect, actual);
 
         assertMapEquals(context(context, TYPE, "columns"),
-            expect.attributes,
-            actual.attributes,
-            MappingAssert::assertMappingAttributeEquals);
+                expect.attributes,
+                actual.attributes,
+                MappingAssert::assertMappingAttributeEquals);
     }
 
     public static void assertMappingAttributeEquals(String context, MappingAttribute expect, MappingAttribute actual) {
@@ -75,16 +75,16 @@ public class MappingAssert {
         } else if (expect instanceof MappingScalar) {
             assertMappingScalarEquals(context, (MappingScalar) expect, (MappingScalar) actual);
         } else {
-            assertEquals("Context: " + context(context, TYPE), expect, actual);
+            assertEquals(expect, actual, "Context: " + context(context, TYPE));
         }
     }
 
     private static void assertMappingRelationEquals(String context, MappingRelation expect, MappingRelation actual) {
         final String TYPE = MappingRelation.class.getSimpleName();
         assertMapEquals(context(context, TYPE, "relations"),
-            expect.relations,
-            actual.relations,
-            MappingAssert::assertMappingValueEquals);
+                expect.relations,
+                actual.relations,
+                MappingAssert::assertMappingValueEquals);
     }
 
     private static void assertMappingScalarEquals(String context, MappingScalar expect, MappingScalar actual) {

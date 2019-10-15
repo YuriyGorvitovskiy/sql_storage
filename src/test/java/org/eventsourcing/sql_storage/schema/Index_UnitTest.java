@@ -14,33 +14,32 @@ import static org.eventsourcing.sql_storage.schema.Example.INDEX_3_2;
 import static org.eventsourcing.sql_storage.schema.Example.INDEX_NAME_1;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_1_1;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_NAME_1;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class Index_UnitTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void builder_getters() {
         // Execute
         Schema schema = new Schema.Builder()
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_1, INTEGER)
-                .column(COLUMN_NAME_2, FLOATING)
-                .index(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
+            .table(TABLE_NAME_1,
+                    t -> t
+                        .column(COLUMN_NAME_1, INTEGER)
+                        .column(COLUMN_NAME_2, FLOATING)
+                        .index(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
             .build();
 
         // Verify
-        Table table = schema.getTable(TABLE_NAME_1);
+        Table  table   = schema.getTable(TABLE_NAME_1);
         Column column1 = table.getColumn(COLUMN_NAME_1);
         Column column2 = table.getColumn(COLUMN_NAME_2);
-        Index index = table.getIndex(INDEX_NAME_1);
+        Index  index   = table.getIndex(INDEX_NAME_1);
 
         assertEquals(table, index.table);
         assertEquals(INDEX_NAME_1, index.name);
@@ -54,17 +53,18 @@ public class Index_UnitTest {
     public void builder_primary() {
         // Execute
         Schema schema = new Schema.Builder()
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_1, INTEGER)
-                .column(COLUMN_NAME_2, FLOATING)
-                .primaryKey(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
+            .table(TABLE_NAME_1,
+                    t -> t
+                        .column(COLUMN_NAME_1, INTEGER)
+                        .column(COLUMN_NAME_2, FLOATING)
+                        .primaryKey(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
             .build();
 
         // Verify
-        Table table = schema.getTable(TABLE_NAME_1);
+        Table  table   = schema.getTable(TABLE_NAME_1);
         Column column1 = table.getColumn(COLUMN_NAME_1);
         Column column2 = table.getColumn(COLUMN_NAME_2);
-        Index index = table.getIndex(INDEX_NAME_1);
+        Index  index   = table.getIndex(INDEX_NAME_1);
 
         assertEquals(table, index.table);
         assertEquals(INDEX_NAME_1, index.name);
@@ -76,55 +76,55 @@ public class Index_UnitTest {
 
     @Test
     public void builder_no_name() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no name specified");
-
         // Execute
-        new Index.Builder()
-            .column(COLUMN_NAME_1)
-            .build(TABLE_1_1);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Index.Builder()
+                    .column(COLUMN_NAME_1)
+                    .build(TABLE_1_1));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no name specified"));
     }
 
     @Test
     public void builder_no_type() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no columns specified");
-
         // Execute
-        new Index.Builder()
-            .name(INDEX_NAME_1)
-            .build(TABLE_1_1);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Index.Builder()
+                    .name(INDEX_NAME_1)
+                    .build(TABLE_1_1));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no columns specified"));
     }
 
     @Test
     public void builder_duplicate_column() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("duplicate column");
-
         // Execute
-        new Index.Builder()
-            .name(INDEX_NAME_1)
-            .column(COLUMN_NAME_1)
-            .column(COLUMN_NAME_2)
-            .column(COLUMN_NAME_1)
-            .build(TABLE_1_1);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Index.Builder()
+                    .name(INDEX_NAME_1)
+                    .column(COLUMN_NAME_1)
+                    .column(COLUMN_NAME_2)
+                    .column(COLUMN_NAME_1)
+                    .build(TABLE_1_1));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("duplicate column"));
     }
 
     @Test
     public void builder_no_column_in_table() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no column");
-
         // Execute
-        new Index.Builder()
-            .name(INDEX_NAME_1)
-            .column(COLUMN_NAME_1)
-            .column("Unknown")
-            .build(TABLE_1_1);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Index.Builder()
+                    .name(INDEX_NAME_1)
+                    .column(COLUMN_NAME_1)
+                    .column("Unknown")
+                    .build(TABLE_1_1));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no column"));
     }
 
     @Test

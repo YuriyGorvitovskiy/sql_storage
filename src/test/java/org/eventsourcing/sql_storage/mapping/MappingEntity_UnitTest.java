@@ -1,24 +1,24 @@
 package org.eventsourcing.sql_storage.mapping;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MappingEntity_UnitTest {
 
     @Test
     public void constructor_getters() {
         // Setup
-        final String ATTR_1 = "attr_1";
-        final String ATTR_2 = "attr_2";
+        final String                  ATTR_1   = "attr_1";
+        final String                  ATTR_2   = "attr_2";
 
-        final MappingScalar mapping1 = new MappingScalar(null);
-        final MappingScalar mapping2 = new MappingScalar(null);
+        final MappingScalar           mapping1 = new MappingScalar(null);
+        final MappingScalar           mapping2 = new MappingScalar(null);
 
-        Map<String, MappingAttribute> mapping = new HashMap<>();
+        Map<String, MappingAttribute> mapping  = new HashMap<>();
         mapping.put(ATTR_1, mapping1);
         mapping.put(ATTR_2, mapping2);
 

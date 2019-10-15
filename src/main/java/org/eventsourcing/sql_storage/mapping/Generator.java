@@ -59,10 +59,11 @@ public class Generator {
     public void generateListAttribute(Schema.Builder schema, Attribute attribute, String entityName) {
         if (attribute.relations.isEmpty()) {
             String name = entityName + NAME_SEPARATOR + attribute.name;
-            schema.table(name, t -> t
-                .column(Column.ID, convert(Primitive.REFERENCE))
-                .column(Column.VALUE, convert(attribute.type.primitive))
-                .index(PRIMARY_INDEX_PREFIX + name, Column.ID));
+            schema.table(name,
+                    t -> t
+                        .column(Column.ID, convert(Primitive.REFERENCE))
+                        .column(Column.VALUE, convert(attribute.type.primitive))
+                        .index(PRIMARY_INDEX_PREFIX + name, Column.ID));
             return;
         }
         for (Relation relation : attribute.relations.values()) {
@@ -73,11 +74,12 @@ public class Generator {
     public void generateMapAttribute(Schema.Builder schema, Attribute attribute, String entityName) {
         if (attribute.relations.isEmpty()) {
             String name = entityName + NAME_SEPARATOR + attribute.name;
-            schema.table(name, t -> t
-                .column(Column.ID, convert(Primitive.REFERENCE))
-                .column(Column.KEY, convert(Primitive.STRING))
-                .column(Column.VALUE, convert(attribute.type.primitive))
-                .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY));
+            schema.table(name,
+                    t -> t
+                        .column(Column.ID, convert(Primitive.REFERENCE))
+                        .column(Column.KEY, convert(Primitive.IDENTIFIER))
+                        .column(Column.VALUE, convert(attribute.type.primitive))
+                        .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY));
             return;
         }
 
@@ -98,7 +100,7 @@ public class Generator {
             String key = name + NAME_SEPARATOR + Column.KEY;
             table
                 .column(name, convert(attribute.type.primitive))
-                .column(key, convert(Primitive.STRING))
+                .column(key, convert(Primitive.IDENTIFIER))
                 .index(INDEX_VALUE_PREFIX + entityName + NAME_SEPARATOR + name, name, key);
             return;
         }
@@ -115,22 +117,23 @@ public class Generator {
         if (!isBest(attribute, relation))
             return;
 
-        String name = attribute.relations.size() == 1
+        String name   = attribute.relations.size() == 1
                 ? entityName + NAME_SEPARATOR + attribute.name
                 : entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
         String column = relation.reverse.owner.name + NAME_SEPARATOR + Column.ID;
-        schema.table(name, t -> t
-            .column(Column.ID, convert(Primitive.REFERENCE))
-            .column(column, convert(attribute.type.primitive))
-            .index(PRIMARY_INDEX_PREFIX + name, Column.ID)
-            .index(INDEX_VALUE_PREFIX + name, column));
+        schema.table(name,
+                t -> t
+                    .column(Column.ID, convert(Primitive.REFERENCE))
+                    .column(column, convert(attribute.type.primitive))
+                    .index(PRIMARY_INDEX_PREFIX + name, Column.ID)
+                    .index(INDEX_VALUE_PREFIX + name, column));
     }
 
     public void generateMapRelation(Schema.Builder schema, Attribute attribute, Relation relation, String entityName) {
         if (Container.SINGLE == relation.reverse.type.container)
             return;
 
-        String name = attribute.relations.size() == 1
+        String name     = attribute.relations.size() == 1
                 ? entityName + NAME_SEPARATOR + attribute.name
                 : entityName + NAME_SEPARATOR + attribute.name + NAME_SEPARATOR + relation.reverse.owner.typeId;
         String columnId = relation.reverse.owner.name + NAME_SEPARATOR + Column.ID;
@@ -139,23 +142,25 @@ public class Generator {
                 return;
 
             String columnKey = relation.reverse.owner.name + NAME_SEPARATOR + Column.KEY;
-            schema.table(name, t -> t
-                .column(Column.ID, convert(Primitive.REFERENCE))
-                .column(Column.KEY, convert(Primitive.STRING))
-                .column(columnId, convert(attribute.type.primitive))
-                .column(columnKey, convert(Primitive.STRING))
-                .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY)
-                .index(INDEX_VALUE_PREFIX + name, columnId, columnKey));
+            schema.table(name,
+                    t -> t
+                        .column(Column.ID, convert(Primitive.REFERENCE))
+                        .column(Column.KEY, convert(Primitive.IDENTIFIER))
+                        .column(columnId, convert(attribute.type.primitive))
+                        .column(columnKey, convert(Primitive.IDENTIFIER))
+                        .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY)
+                        .index(INDEX_VALUE_PREFIX + name, columnId, columnKey));
 
             return;
         }
 
-        schema.table(name, t -> t
-            .column(Column.ID, convert(Primitive.REFERENCE))
-            .column(Column.KEY, convert(Primitive.STRING))
-            .column(columnId, convert(attribute.type.primitive))
-            .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY)
-            .index(INDEX_VALUE_PREFIX + name, columnId));
+        schema.table(name,
+                t -> t
+                    .column(Column.ID, convert(Primitive.REFERENCE))
+                    .column(Column.KEY, convert(Primitive.IDENTIFIER))
+                    .column(columnId, convert(attribute.type.primitive))
+                    .primaryKey(PRIMARY_KEY_PREFIX + name, Column.ID, Column.KEY)
+                    .index(INDEX_VALUE_PREFIX + name, columnId));
     }
 
     boolean isBest(Attribute attribute, Relation relation) {
@@ -174,14 +179,18 @@ public class Generator {
                     return DataType.DATETIME;
                 case FLOATING:
                     return DataType.FLOATING;
+                case IDENTIFIER:
+                    return DataType.IDENTIFIER;
                 case INTEGER:
                     return DataType.INTEGER;
                 case REFERENCE:
                     return DataType.INTEGER;
                 case STRING:
-                    return DataType.VARCHAR;
+                    return DataType.STRING;
                 case TEXT:
                     return DataType.TEXT;
+                default:
+                    break;
             }
         }
         return null;

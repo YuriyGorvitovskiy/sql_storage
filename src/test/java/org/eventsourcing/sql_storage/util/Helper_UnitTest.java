@@ -1,10 +1,11 @@
 package org.eventsourcing.sql_storage.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,16 +13,15 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
+
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class Helper_UnitTest {
-    public static final String ONE   = "1";
-    public static final String TWO   = "II";
-    public static final String THREE = "three";
-    public static final String NULL  = null;
+    public static final String    ONE        = "1";
+    public static final String    TWO        = "II";
+    public static final String    THREE      = "three";
+    public static final String    NULL       = null;
 
     @SuppressWarnings("unused")
     private static final String   PRIVATE    = "private";
@@ -30,9 +30,6 @@ public class Helper_UnitTest {
     public static String          MUTABLE    = "mutable";
     public final String           DYNAMIC    = "dynamic";
     public static final Integer   WRONG_TYPE = 42;
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void codeCoverage() {
@@ -127,29 +124,29 @@ public class Helper_UnitTest {
 
     @Test
     public void scanResource_noResource() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("non-existing");
-
         // Execute
-        Helper.scanResource(Helper.class, "non-existing", (s) -> null);
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> Helper.scanResource(Helper.class, "non-existing", (s) -> null));
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("non-existing"));
     }
 
     @Test
     public void processResource_openSuccess_processSuccess_closeSuccess() {
         // Setup
-        final String SUCCESS = "success";
-        final String FAILURE = "failure";
+        final String        SUCCESS  = "success";
+        final String        FAILURE  = "failure";
         final AutoCloseable RESOURCE = () -> {};
 
         // Execute
         final String actual = Helper.processResource(
-            () -> RESOURCE,
-            (r) -> {
-                assertSame(RESOURCE, r);
-                return SUCCESS;
-            },
-            (e) -> FAILURE);
+                () -> RESOURCE,
+                (r) -> {
+                    assertSame(RESOURCE, r);
+                    return SUCCESS;
+                },
+                (e) -> FAILURE);
         ;
 
         // Verify
@@ -164,9 +161,9 @@ public class Helper_UnitTest {
 
         // Execute
         final String actual = Helper.processResource(
-            () -> null,
-            (r) -> SUCCESS,
-            (e) -> FAILURE);
+                () -> null,
+                (r) -> SUCCESS,
+                (e) -> FAILURE);
 
         // Verify
         assertSame(SUCCESS, actual);
@@ -179,11 +176,11 @@ public class Helper_UnitTest {
 
         // Execute
         final String actual = Helper.processResource(
-            () -> null,
-            (r) -> {
-                throw new IndexOutOfBoundsException();
-            },
-            (e) -> FAILURE);
+                () -> null,
+                (r) -> {
+                    throw new IndexOutOfBoundsException();
+                },
+                (e) -> FAILURE);
 
         // Verify
         assertSame(FAILURE, actual);
@@ -197,11 +194,11 @@ public class Helper_UnitTest {
 
         // Execute
         final String actual = Helper.processResource(
-            () -> {
-                throw new Exception();
-            },
-            (r) -> SUCCESS,
-            (e) -> FAILURE);
+                () -> {
+                    throw new Exception();
+                },
+                (r) -> SUCCESS,
+                (e) -> FAILURE);
 
         // Verify
         assertSame(FAILURE, actual);
@@ -212,15 +209,15 @@ public class Helper_UnitTest {
         // Setup
         @SuppressWarnings("resource")
         final AutoCloseable RESOURCE = () -> {};
-        final String FAILURE = "failure";
+        final String        FAILURE  = "failure";
 
         // Execute
         Helper.processResource(
-            () -> RESOURCE,
-            (r) -> {
-                throw new IndexOutOfBoundsException();
-            },
-            (e) -> FAILURE);
+                () -> RESOURCE,
+                (r) -> {
+                    throw new IndexOutOfBoundsException();
+                },
+                (e) -> FAILURE);
     }
 
     @Test
@@ -228,16 +225,16 @@ public class Helper_UnitTest {
         // Setup
         @SuppressWarnings("resource")
         final AutoCloseable RESOURCE = () -> {
-            throw new IndexOutOfBoundsException();
-        };
-        final String SUCCESS = "success";
-        final String FAILURE = "failure";
+                                         throw new IndexOutOfBoundsException();
+                                     };
+        final String        SUCCESS  = "success";
+        final String        FAILURE  = "failure";
 
         // Execute
         String actual = Helper.processResource(
-            () -> RESOURCE,
-            (r) -> SUCCESS,
-            (e) -> FAILURE);
+                () -> RESOURCE,
+                (r) -> SUCCESS,
+                (e) -> FAILURE);
 
         // Verify
         assertSame(FAILURE, actual);
@@ -248,17 +245,17 @@ public class Helper_UnitTest {
         // Setup
         @SuppressWarnings("resource")
         final AutoCloseable RESOURCE = () -> {
-            throw new IndexOutOfBoundsException();
-        };
-        final String FAILURE = "failure";
+                                         throw new IndexOutOfBoundsException();
+                                     };
+        final String        FAILURE  = "failure";
 
         // Execute
         String actual = Helper.processResource(
-            () -> RESOURCE,
-            (r) -> {
-                throw new IndexOutOfBoundsException();
-            },
-            (e) -> FAILURE);
+                () -> RESOURCE,
+                (r) -> {
+                    throw new IndexOutOfBoundsException();
+                },
+                (e) -> FAILURE);
 
         // Verify
         assertSame(FAILURE, actual);

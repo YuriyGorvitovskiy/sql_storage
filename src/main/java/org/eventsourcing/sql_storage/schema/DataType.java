@@ -5,6 +5,7 @@ public enum DataType {
     INTEGER,
     FLOATING,
     DATETIME,
-    VARCHAR,
+    IDENTIFIER,
+    STRING,
     TEXT
 }

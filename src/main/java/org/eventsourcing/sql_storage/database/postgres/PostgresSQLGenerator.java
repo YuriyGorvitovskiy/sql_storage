@@ -54,12 +54,14 @@ public class PostgresSQLGenerator extends SQLGenerator {
                 return "timestamp with time zone";
             case FLOATING:
                 return "double precision";
+            case IDENTIFIER:
+                return "character varying (256)";
             case INTEGER:
                 return "bigint";
             case TEXT:
                 return "text";
-            case VARCHAR:
-                return "character varying (256)";
+            case STRING:
+                return "character varying (1024)";
             default:
                 throw new RuntimeException("Unknown datatype: " + type);
         }

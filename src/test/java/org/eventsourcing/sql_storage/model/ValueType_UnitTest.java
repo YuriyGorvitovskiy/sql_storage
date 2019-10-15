@@ -3,11 +3,12 @@ package org.eventsourcing.sql_storage.model;
 import static org.eventsourcing.sql_storage.model.Container.LIST;
 import static org.eventsourcing.sql_storage.model.Container.MAP;
 import static org.eventsourcing.sql_storage.model.Container.SINGLE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Test;
 
 public class ValueType_UnitTest {
 
@@ -64,10 +65,10 @@ public class ValueType_UnitTest {
     @Test
     public void equals_and_hash() {
         // Setup
-        final ValueType TYPE_P1_C1 = ValueType.INTEGER;
-        final ValueType TYPE_P1_C2 = ValueType.INTEGER_MAP;
-        final ValueType TYPE_P2_C1 = ValueType.REFERENCE;
-        final ValueType TYPE_P2_C2 = ValueType.REFERENCE_MAP;
+        final ValueType TYPE_P1_C1      = ValueType.INTEGER;
+        final ValueType TYPE_P1_C2      = ValueType.INTEGER_MAP;
+        final ValueType TYPE_P2_C1      = ValueType.REFERENCE;
+        final ValueType TYPE_P2_C2      = ValueType.REFERENCE_MAP;
         final ValueType TYPE_P1_C1_COPY = ValueType.INTEGER;
 
         // Execute & Verify

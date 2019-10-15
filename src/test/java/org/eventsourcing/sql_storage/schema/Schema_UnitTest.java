@@ -11,26 +11,26 @@ import static org.eventsourcing.sql_storage.schema.Example.SCHEMA_2;
 import static org.eventsourcing.sql_storage.schema.Example.SCHEMA_3;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_NAME_1;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_NAME_2;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class Schema_UnitTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void builder_getters() {
         // Execute
         Schema schema = new Schema.Builder()
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_1, INTEGER))
-            .table(TABLE_NAME_2, t -> t
-                .column(COLUMN_NAME_2, FLOATING))
+            .table(TABLE_NAME_1,
+                    t -> t
+                        .column(COLUMN_NAME_1, INTEGER))
+            .table(TABLE_NAME_2,
+                    t -> t
+                        .column(COLUMN_NAME_2, FLOATING))
             .build();
 
         // Verify
@@ -42,19 +42,16 @@ public class Schema_UnitTest {
 
     @Test
     public void builder_duplicate_table() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("duplicate table");
-
         // Execute
-        new Schema.Builder()
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_1, BOOLEAN))
-            .table(TABLE_NAME_2, t -> t
-                .column(COLUMN_NAME_2, INTEGER))
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_3, FLOATING))
-            .build();
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Schema.Builder()
+                    .table(TABLE_NAME_1, t -> t.column(COLUMN_NAME_1, BOOLEAN))
+                    .table(TABLE_NAME_2, t -> t.column(COLUMN_NAME_2, INTEGER))
+                    .table(TABLE_NAME_1, t -> t.column(COLUMN_NAME_3, FLOATING))
+                    .build());
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("duplicate table"));
     }
 
     @Test

@@ -5,6 +5,7 @@ public enum Primitive {
     INTEGER,
     FLOATING,
     DATETIME,
+    IDENTIFIER,
     STRING,
     TEXT,
     REFERENCE,

@@ -1,7 +1,8 @@
 package org.eventsourcing.sql_storage.schema;
 
+import org.junit.jupiter.api.Test;
+
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Test;
 
 public class DataType_UnitTest {
 

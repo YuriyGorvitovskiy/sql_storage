@@ -16,26 +16,25 @@ import static org.eventsourcing.sql_storage.schema.Example.TABLE_3_1;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_3_2;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_3_3;
 import static org.eventsourcing.sql_storage.schema.Example.TABLE_NAME_1;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class Table_UnitTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void builder_getters() {
         // Execute
         Schema schema = new Schema.Builder()
-            .table(TABLE_NAME_1, t -> t
-                .column(COLUMN_NAME_1, INTEGER)
-                .column(COLUMN_NAME_2, FLOATING)
-                .index(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
+            .table(TABLE_NAME_1,
+                    t -> t
+                        .column(COLUMN_NAME_1, INTEGER)
+                        .column(COLUMN_NAME_2, FLOATING)
+                        .index(INDEX_NAME_1, COLUMN_NAME_1, COLUMN_NAME_2))
             .build();
 
         // Verify
@@ -52,57 +51,57 @@ public class Table_UnitTest {
 
     @Test
     public void builder_no_name() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no name specified");
-
         // Execute
-        new Table.Builder()
-            .column(COLUMN_NAME_1, INTEGER)
-            .build();
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Table.Builder()
+                    .column(COLUMN_NAME_1, INTEGER)
+                    .build());
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no name specified"));
     }
 
     @Test
     public void builder_no_column() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("no columns specified");
-
         // Execute
-        new Table.Builder()
-            .name(TABLE_NAME_1)
-            .build();
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Table.Builder()
+                    .name(TABLE_NAME_1)
+                    .build());
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("no columns specified"));
     }
 
     @Test
     public void builder_duplicate_column() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("duplicate column");
-
         // Execute
-        new Table.Builder()
-            .name(TABLE_NAME_1)
-            .column(COLUMN_NAME_1, BOOLEAN)
-            .column(COLUMN_NAME_2, INTEGER)
-            .column(COLUMN_NAME_1, FLOATING)
-            .build();
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Table.Builder()
+                    .name(TABLE_NAME_1)
+                    .column(COLUMN_NAME_1, BOOLEAN)
+                    .column(COLUMN_NAME_2, INTEGER)
+                    .column(COLUMN_NAME_1, FLOATING)
+                    .build());
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("duplicate column"));
     }
 
     @Test
     public void builder_duplicate_index() {
-        // Rule
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("duplicate index");
-
         // Execute
-        new Table.Builder()
-            .name(TABLE_NAME_1)
-            .column(COLUMN_NAME_1, BOOLEAN)
-            .column(COLUMN_NAME_2, INTEGER)
-            .index(INDEX_NAME_1, COLUMN_NAME_1)
-            .index(INDEX_NAME_1, COLUMN_NAME_2)
-            .build();
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> new Table.Builder()
+                    .name(TABLE_NAME_1)
+                    .column(COLUMN_NAME_1, BOOLEAN)
+                    .column(COLUMN_NAME_2, INTEGER)
+                    .index(INDEX_NAME_1, COLUMN_NAME_1)
+                    .index(INDEX_NAME_1, COLUMN_NAME_2)
+                    .build());
+
+        // Verify
+        assertTrue(thrown.getMessage().contains("duplicate index"));
     }
 
     @Test

@@ -1,10 +1,10 @@
 package org.eventsourcing.sql_storage.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ public class Asserts {
         // To pass 100% Code Coverage for enumeration
         try {
             assertTrue(subject.isEnum());
-            T[] e = subject.getEnumConstants();
+            T[]    e = subject.getEnumConstants();
             Method m = subject.getMethod("valueOf", String.class);
             for (int i = 0; i < e.length; ++i) {
                 assertSame(e[0], m.invoke(null, e[0].toString()));
@@ -59,7 +59,7 @@ public class Asserts {
         for (Object a : equalsObjects) {
             for (Object b : equalsObjects) {
                 assertEquals(a, b);
-                assertEquals("HashCode should be the same for: " + a + " and " + b, a.hashCode(), b.hashCode());
+                assertEquals(a.hashCode(), b.hashCode(), "Hash code should be the same for: " + a + " and " + b);
             }
         }
     }
@@ -75,7 +75,7 @@ public class Asserts {
     }
 
     public static <K extends Comparable<K>, E> void assertMapEquals(String context, Map<K, E> expect, Map<K, E> actual,
-            ContextAssert<E> azzert) {
+                                                                    ContextAssert<E> azzert) {
         if (expect == actual)
             return;
 

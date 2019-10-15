@@ -2,36 +2,45 @@ package org.eventsourcing.sql_storage.model;
 
 import static org.eventsourcing.sql_storage.model.ValueType.FLOATING;
 import static org.eventsourcing.sql_storage.model.ValueType.INTEGER;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import org.junit.jupiter.api.Test;
 
 import org.eventsourcing.sql_storage.test.Asserts;
-import org.junit.Test;
 
 public class AttrtibuteId_UnitTest {
 
-    static final long TYPE_ID1 = 1;
-    static final long TYPE_ID2 = 2;
+    static final long   TYPE_ID1     = 1;
+    static final long   TYPE_ID2     = 2;
 
     static final String ENTITY_NAME1 = "Hello";
     static final String ENTITY_NAME2 = "World";
 
-    static final String ATTR_NAME1 = "first";
-    static final String ATTR_NAME2 = "second";
+    static final String ATTR_NAME1   = "first";
+    static final String ATTR_NAME2   = "second";
 
-    final Model MODEL1 = new Model.Builder()
-        .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
-            .attribute(ATTR_NAME1, FLOATING)
-            .attribute(ATTR_NAME2, INTEGER))
-        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
-            .attribute(ATTR_NAME1, FLOATING)
-            .attribute(ATTR_NAME2, INTEGER))
+    final Model         MODEL1       = new Model.Builder()
+        .type(TYPE_ID1,
+                ENTITY_NAME1,
+                (t) -> t
+                    .attribute(ATTR_NAME1, FLOATING)
+                    .attribute(ATTR_NAME2, INTEGER))
+        .type(TYPE_ID2,
+                ENTITY_NAME2,
+                (t) -> t
+                    .attribute(ATTR_NAME1, FLOATING)
+                    .attribute(ATTR_NAME2, INTEGER))
         .build();
 
-    final Model MODEL2 = new Model.Builder()
-        .type(TYPE_ID1, ENTITY_NAME1, (t) -> t
-            .attribute(ATTR_NAME1, FLOATING))
-        .type(TYPE_ID2, ENTITY_NAME2, (t) -> t
-            .attribute(ATTR_NAME2, INTEGER))
+    final Model         MODEL2       = new Model.Builder()
+        .type(TYPE_ID1,
+                ENTITY_NAME1,
+                (t) -> t
+                    .attribute(ATTR_NAME1, FLOATING))
+        .type(TYPE_ID2,
+                ENTITY_NAME2,
+                (t) -> t
+                    .attribute(ATTR_NAME2, INTEGER))
         .build();
 
     @Test
